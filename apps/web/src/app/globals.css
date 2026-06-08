@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 33 33% 94%;
+  --foreground: 0 0% 11%;
+  --muted: 36 28% 88%;
+  --muted-foreground: 0 0% 38%;
+  --border: 36 18% 82%;
+  --accent: 43 38% 88%;
+  --accent-foreground: 0 0% 11%;
+  --ring: 181 61% 15%;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display tracking-tight text-foreground;
+  }
+}
+
+body {
+  @apply min-h-screen bg-background font-sans text-foreground antialiased;
+}

@@ -1,0 +1,169 @@
+// LEGABIT — PostgreSQL es la fuente de verdad. RLS en Supabase complementa el aislamiento por tenant.
+// Mapeo: Clerk User → User | Clerk Organization → Organization
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum OrganizationType {
+  LAW_FIRM
+  STARTUP
+  SME
+  EDUCATIONAL
+}
+
+/// Roles por organización. `super_admin` de plataforma: ver `User.platformRole`.
+enum MembershipRole {
+  organization_owner
+  admin
+  legal_operator
+  educator
+  student
+  client
+  community_moderator
+}
+
+enum PlatformRole {
+  none
+  super_admin
+}
+
+enum InvitationStatus {
+  pending
+  accepted
+  revoked
+  expired
+}
+
+/// Usuario interno; `clerkUserId` es la clave de identidad externa.
+model User {
+  id           String       @id @default(cuid())
+  clerkUserId  String       @unique
+  email        String
+  displayName  String?
+  imageUrl     String?
+  platformRole PlatformRole @default(none)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  memberships Membership[]
+  invitationsSent OrganizationInvitation[] @relation("InvitationInviter")
+  auditLogs   AuditLog[]
+
+  @@index([clerkUserId])
+  @@index([email])
+}
+
+/// Organización (tenant); `clerkOrganizationId` enlaza con Clerk cuando aplica.
+model Organization {
+  id                   String           @id @default(cuid())
+  clerkOrganizationId  String?          @unique
+  name                 String
+  slug                 String           @unique
+  type                 OrganizationType
+  stripeCustomerId     String?          @unique
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  memberships  Membership[]
+  invitations  OrganizationInvitation[]
+  auditLogs    AuditLog[]
+
+  @@index([slug])
+  @@index([clerkOrganizationId])
+}
+
+/// Membresía: RBAC por organización. `super_admin` a nivel plataforma vive en `User.platformRole`.
+model Membership {
+  id             String         @id @default(cuid())
+  organizationId String
+  userId         String
+  role           MembershipRole
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+model OrganizationInvitation {
+  id             String           @id @default(cuid())
+  organizationId String
+  email          String
+  role           MembershipRole
+  tokenHash      String           @unique
+  status         InvitationStatus @default(pending)
+  invitedById    String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  expiresAt DateTime
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedBy    User         @relation("InvitationInviter", fields: [invitedById], references: [id])
+
+  @@index([organizationId])
+  @@index([email])
+}
+
+/// Registro de auditoría append-only para mutaciones sensibles (ampliar por dominio).
+model AuditLog {
+  id             String   @id @default(cuid())
+  organizationId String?
+  actorUserId    String?
+  action         String
+  entityType     String
+  entityId       String?
+  metadata       Json?
+  ipAddress      String?
+  userAgent      String?
+
+  createdAt DateTime @default(now())
+
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  actor        User?         @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@index([entityType, entityId])
+}
+
+/// Suscriptores públicos al newsletter (landing / marketing). Independiente del modelo `User` (Clerk).
+model NewsletterSubscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  displayName  String?
+  /// landing, footer, popup, etc.
+  source       String   @default("landing")
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// --- Plantilla para tablas operativas futuras (comentario de convención):
+// model ExampleEntity {
+//   id             String   @id @default(cuid())
+//   organizationId String
+//   createdById    String
+//   createdAt      DateTime @default(now())
+//   updatedAt      DateTime @updatedAt
+//   deletedAt      DateTime?
+//   organization   Organization @relation(fields: [organizationId], references: [id])
+//   createdBy      User         @relation(fields: [createdById], references: [id])
+//   @@index([organizationId])
+// }

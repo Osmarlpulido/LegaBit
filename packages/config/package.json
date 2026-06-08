@@ -1,0 +1,8 @@
+{
+  "name": "@legabit/config",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./typescript": "./typescript/tsconfig.base.json"
+  }
+}

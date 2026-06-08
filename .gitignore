@@ -1,0 +1,35 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build
+.next
+out
+dist
+build
+.turbo
+
+# Env
+.env
+.env*.local
+!.env.example
+
+# Debug / IDE
+*.log
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+# Prisma
+packages/db/prisma/migrations/**/migration_lock.toml
+
+# Vercel
+.vercel
+
+# Testing
+coverage
+
+# Misc
+*.tsbuildinfo

@@ -1,0 +1,22 @@
+{
+  "name": "@legabit/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck"
+  },
+  "dependencies": {
+    "@legabit/db": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

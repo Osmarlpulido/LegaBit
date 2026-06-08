@@ -1,0 +1,11 @@
+{
+  "extends": "../config/typescript/tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "rootDir": "src",
+    "noEmit": true
+  },
+  "include": ["src/**/*.tsx", "src/**/*.ts"]
+}
