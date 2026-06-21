@@ -10,6 +10,7 @@ type NewsletterFormProps = {
 export function NewsletterForm({ variant = "card", source = "landing" }: NewsletterFormProps) {
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [feedback, setFeedback] = useState<string | null>(null);
 
@@ -24,6 +25,7 @@ export function NewsletterForm({ variant = "card", source = "landing" }: Newslet
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           email,
+          phone,
           displayName: displayName.trim() || undefined,
           source
         })
@@ -47,6 +49,7 @@ export function NewsletterForm({ variant = "card", source = "landing" }: Newslet
       if (data.alreadySubscribed !== true) {
         setEmail("");
         setDisplayName("");
+        setPhone("");
       }
     } catch {
       setStatus("error");
@@ -70,6 +73,7 @@ export function NewsletterForm({ variant = "card", source = "landing" }: Newslet
             id="nw-name"
             name="displayName"
             type="text"
+            required
             autoComplete="name"
             value={displayName}
             onChange={(ev) => setDisplayName(ev.target.value)}
@@ -79,7 +83,7 @@ export function NewsletterForm({ variant = "card", source = "landing" }: Newslet
         </div>
         <div>
           <label htmlFor="nw-email" className="mb-1.5 block text-sm font-medium text-foreground">
-            Correo profesional
+            Correo
           </label>
           <input
             id="nw-email"
@@ -90,6 +94,22 @@ export function NewsletterForm({ variant = "card", source = "landing" }: Newslet
             value={email}
             onChange={(ev) => setEmail(ev.target.value)}
             placeholder="tu@correo.com"
+            className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-legabit-petrol/25"
+          />
+        </div>
+        <div>
+          <label htmlFor="nw-phone" className="mb-1.5 block text-sm font-medium text-foreground">
+            Teléfono
+          </label>
+          <input
+            id="nw-phone"
+            name="phone"
+            type="tel"
+            required
+            autoComplete="tel"
+            value={phone}
+            onChange={(ev) => setPhone(ev.target.value)}
+            placeholder="+57 300 000 0000"
             className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-legabit-petrol/25"
           />
         </div>

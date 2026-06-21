@@ -21,6 +21,7 @@ function hasSupabaseServiceCredentials(): boolean {
 async function subscribeViaSupabase(
   email: string,
   displayName: string | undefined,
+  phone: string,
   source: string
 ): Promise<{ duplicate: boolean; missingTable: boolean; other: boolean }> {
   const supabase = createSupabaseAdminClient();
@@ -28,6 +29,7 @@ async function subscribeViaSupabase(
     id: crypto.randomUUID(),
     email,
     displayName: displayName ?? null,
+    phone,
     source
   });
 
@@ -44,7 +46,9 @@ async function subscribeViaSupabase(
     error.code === "PGRST205" ||
     error.code === "42P01" ||
     msg.includes("does not exist") ||
-    msg.includes("could not find the table");
+    msg.includes("could not find the table") ||
+    msg.includes("schema cache") ||
+    msg.includes("column");
 
   if (missingTable) {
     return { duplicate: false, missingTable: true, other: false };
@@ -82,12 +86,12 @@ export async function POST(request: Request) {
     });
   }
 
-  const { email, displayName, source } = parsed.data;
+  const { email, displayName, phone, source } = parsed.data;
 
   try {
     // Preferir Supabase si hay clave de servicio: evita Prisma con DATABASE_URL rota o vacía.
     if (hasSupabaseServiceCredentials()) {
-      const supResult = await subscribeViaSupabase(email, displayName, source);
+      const supResult = await subscribeViaSupabase(email, displayName, phone, source);
       if (supResult.duplicate) {
         return Response.json({
           ok: true as const,
@@ -99,7 +103,7 @@ export async function POST(request: Request) {
         return jsonError(503, {
           code: "TABLE_MISSING",
           message:
-            "Falta la tabla en Supabase. Abre packages/db/supabase-sql-editor/newsletter_subscriber.sql, cópialo en SQL Editor de tu proyecto Supabase y ejecútalo una vez."
+            "Falta la tabla o la columna phone en Supabase. Abre packages/db/supabase-sql-editor/newsletter_subscriber.sql, cópialo en SQL Editor de tu proyecto Supabase y ejecútalo una vez."
         });
       }
       if (supResult.other) {
@@ -113,6 +117,7 @@ export async function POST(request: Request) {
         data: {
           email,
           displayName,
+          phone,
           source
         }
       });

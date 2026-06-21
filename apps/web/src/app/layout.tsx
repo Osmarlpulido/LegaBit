@@ -19,9 +19,9 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Legabit — Derecho penal + blockchain/Web3",
+  title: "Legabit — Derecho, tecnología y finanzas",
   description:
-    "Newsletter, comunidad y formación práctica para abogados y profesionales: blockchain/Web3 sin ruido técnico ni convertirte en programador."
+    "Ecosistema editorial y formativo con podcasts, newsletters, artículos, cursos y eventos sobre derecho, tecnología y finanzas."
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

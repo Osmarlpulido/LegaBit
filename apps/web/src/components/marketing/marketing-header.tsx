@@ -1,8 +1,6 @@
 import Link from "next/link";
 
-import { HeaderAuth } from "@/components/auth/header-auth";
 import { LegabitLogo } from "@/components/marketing/legabit-logo";
-import { WalletConnectButton } from "@/components/web3/wallet-connect-button";
 
 export function MarketingHeader() {
   return (
@@ -15,29 +13,24 @@ export function MarketingHeader() {
           <LegabitLogo />
         </Link>
         <nav className="flex flex-wrap items-center gap-4 text-sm font-medium">
+          <Link href="/podcast" className="text-muted-foreground hover:text-legabit-petrol">
+            Podcast
+          </Link>
           <Link href="/blog" className="text-muted-foreground hover:text-legabit-petrol">
-            Blog
+            Artículos
           </Link>
           <Link href="/cursos" className="text-muted-foreground hover:text-legabit-petrol">
-            Cursos y talleres
+            Cursos
           </Link>
-          <Link href="/recursos" className="text-muted-foreground hover:text-legabit-petrol">
-            Recursos
+          <Link href="/eventos" className="text-muted-foreground hover:text-legabit-petrol">
+            Eventos
           </Link>
           <Link
-            href="/#newsletter"
+            href="/newsletter"
             className="rounded-lg bg-legabit-charcoal px-3 py-1.5 text-legabit-ivory hover:bg-legabit-petrol"
           >
             Newsletter
           </Link>
-          <Link
-            href="/dashboard"
-            className="text-muted-foreground hover:text-legabit-petrol"
-          >
-            Dashboard
-          </Link>
-          <WalletConnectButton />
-          <HeaderAuth />
         </nav>
       </div>
     </header>

@@ -30,7 +30,7 @@ export function LegabitLogo({ className }: { className?: string }) {
     return (
       <Image
         src="/legabit-logo.png"
-        alt="Legabit — Derecho y tecnología"
+        alt="Legabit — Derecho, tecnología y finanzas"
         width={220}
         height={62}
         priority

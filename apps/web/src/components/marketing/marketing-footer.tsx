@@ -8,7 +8,7 @@ export function MarketingFooter() {
         <div>
           <LegabitLogo />
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
-            Derecho penal + blockchain/Web3 con foco práctico.
+            Información y comunidad sobre derecho, tecnología y finanzas.
           </p>
         </div>
         <SocialLinks />

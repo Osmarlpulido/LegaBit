@@ -5,27 +5,42 @@ import { MarketingFooter } from "@/components/marketing/marketing-footer";
 import { MarketingHeader } from "@/components/marketing/marketing-header";
 import { MarketingHero } from "@/components/marketing/marketing-hero";
 import { MarketingBadge, SectionTitle } from "@/components/marketing/marketing-section";
-import { SocialLinks } from "@/components/marketing/social-links";
+import { blogPosts } from "@/lib/blog-data";
+import { courses } from "@/lib/cursos-data";
+import { events2026 } from "@/lib/eventos-data";
+import { podcastEpisodes } from "@/lib/podcast-data";
 
-const blogPreview = [
+const ecosystem = [
   {
-    tag: "Análisis",
-    title: "Criptoactivos y derecho penal: mapa de riesgos para la asesoría",
-    excerpt: "Marco práctico para priorizar líneas defensivas y preguntas clave ante clientes institucionales."
+    title: "Podcast",
+    description: "Episodios y conversaciones publicadas en YouTube y Spotify.",
+    href: "/podcast"
   },
   {
-    tag: "Tendencias",
-    title: "Trazabilidad on-chain sin perder rigor jurídico",
-    excerpt: "Cómo comunicar evidencia digital sin caer en sobrecarga técnica ante jueces y equipos externos."
+    title: "Newsletters",
+    description: "Registro con nombre, correo y teléfono para recibir información de interés.",
+    href: "/newsletter"
   },
   {
-    tag: "Estrategia",
-    title: "Web3 y nuevas líneas de ingreso para despachos",
-    excerpt: "Productos de conocimiento, compliance y educación: qué encaja según tu escala y nicho."
+    title: "Artículos",
+    description: "Análisis escritos por administradores y colaboradores de la comunidad.",
+    href: "/blog"
+  },
+  {
+    title: "Cursos",
+    description: "Talleres y cursos virtuales o presenciales dictados por tutores.",
+    href: "/cursos"
+  },
+  {
+    title: "Eventos",
+    description: "Calendario anual con eventos próximos y ya realizados.",
+    href: "/eventos"
   }
 ] as const;
 
 export default function HomePage() {
+  const nextEvents = events2026.filter((event) => event.status === "Próximo").slice(0, 2);
+
   return (
     <div className="min-h-screen">
       <MarketingHeader />
@@ -33,62 +48,56 @@ export default function HomePage() {
       <main>
         <MarketingHero />
 
-        <section className="mx-auto max-w-5xl px-6 py-16 sm:py-20" id="como-funciona">
+        <section className="mx-auto max-w-5xl px-6 py-16 sm:py-20" id="ecosistema">
           <SectionTitle
-            title="No te falta voluntad. Te falta un mapa claro."
-            lead="Tres fricciones habituales que resolvemos con contenido curado y lenguaje jurídico."
+            eyebrow="Ecosistema"
+            title="Cinco espacios conectados"
+            lead="Legabit organiza conocimiento y comunidad alrededor de formatos claros para aprender, publicar, escuchar y encontrarse."
           />
-          <div className="grid gap-6 sm:grid-cols-3">
-            {[
-              {
-                t: "Clientes más exigentes",
-                d: "Ya preguntan por criptoactivos, trazabilidad, tokenización o riesgos penales digitales."
-              },
-              {
-                t: "Poco tiempo real",
-                d: "Entre audiencias y gestión diaria, estudiar tecnología desde cero no es una opción realista."
-              },
-              {
-                t: "Demasiado ruido",
-                d: "Faltan fuentes que traduzcan blockchain al lenguaje que necesitas para decidir con seguridad."
-              }
-            ].map((card) => (
-              <article key={card.t} className="rounded-2xl border border-border bg-accent/20 p-6">
-                <h3 className="text-lg font-semibold">{card.t}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{card.d}</p>
-              </article>
+          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+            {ecosystem.map((item) => (
+              <li key={item.title}>
+                <Link href={item.href} className="group block h-full">
+                  <article className="flex h-full flex-col rounded-xl border border-border bg-background p-5 shadow-sm transition-all group-hover:border-legabit-gold/50 group-hover:shadow-md">
+                    <h3 className="font-semibold group-hover:text-legabit-petrol">{item.title}</h3>
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+                      {item.description}
+                    </p>
+                    <span className="mt-5 text-xs font-semibold text-legabit-gold">Explorar</span>
+                  </article>
+                </Link>
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
 
-        <section
-          className="border-y border-border bg-muted/30 py-16 sm:py-20"
-          id="preview-blog"
-          aria-labelledby="preview-blog-heading"
-        >
+        <section className="border-y border-border bg-muted/25 py-16 sm:py-20" id="podcast">
           <div className="mx-auto max-w-5xl px-6">
-            <SectionTitle
-              eyebrow="Vista previa"
-              title="Blog"
-              lead="Artículos y análisis en preparación. Pronto publicación en el sitio."
-            />
-            <p className="-mt-4 mb-10">
-              <Link href="/blog" className="text-sm font-semibold text-legabit-charcoal underline-offset-4 hover:underline hover:text-legabit-petrol">
-                Ver página del blog
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <SectionTitle
+                eyebrow="Audio y video"
+                title="Podcast"
+                lead="Episodios pensados para convertir temas complejos en conversaciones útiles."
+              />
+              <Link
+                href="/podcast"
+                className="mb-10 text-sm font-semibold text-legabit-charcoal underline-offset-4 hover:text-legabit-petrol hover:underline"
+              >
+                Ver todos
               </Link>
-            </p>
+            </div>
             <ul className="grid gap-6 sm:grid-cols-3">
-              {blogPreview.map((post, i) => (
-                <li key={i}>
-                  <article className="flex h-full flex-col rounded-2xl border border-border bg-background p-6 shadow-sm">
-                    <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      {post.tag}
-                    </span>
-                    <h3 id={i === 0 ? "preview-blog-heading" : undefined} className="mt-2 font-semibold leading-snug">
-                      {post.title}
-                    </h3>
-                    <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{post.excerpt}</p>
-                    <p className="mt-4 text-xs font-medium text-muted-foreground">Próximamente · legabit.blog</p>
+              {podcastEpisodes.map((episode) => (
+                <li key={episode.id}>
+                  <article className="flex h-full flex-col rounded-xl border border-border bg-background p-6 shadow-sm">
+                    <MarketingBadge>{episode.topic}</MarketingBadge>
+                    <h3 className="mt-4 font-semibold leading-snug">{episode.title}</h3>
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+                      {episode.description}
+                    </p>
+                    <p className="mt-5 text-xs font-medium text-muted-foreground">
+                      {episode.publishedAt} · {episode.duration}
+                    </p>
                   </article>
                 </li>
               ))}
@@ -96,92 +105,121 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-5xl px-6 py-16 sm:py-20" id="cursos">
-          <SectionTitle
-            eyebrow="Próximamente"
-            title="Cursos y talleres"
-            lead="Plantillas prácticas, talleres guiados y rutas cortas pensadas para equipos jurídicos y profesionales independientes."
-          />
-          <p className="-mt-4 mb-10">
-            <Link href="/cursos" className="text-sm font-semibold text-legabit-charcoal underline-offset-4 hover:underline hover:text-legabit-petrol">
-              Ver LMS piloto y tablero colaborativo
+        <section className="mx-auto max-w-5xl px-6 py-16 sm:py-20" id="articulos">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <SectionTitle
+              eyebrow="Publicaciones"
+              title="Artículos"
+              lead="Análisis y guías escritas para unir rigor jurídico, lectura tecnológica y criterio financiero."
+            />
+            <Link
+              href="/blog"
+              className="mb-10 text-sm font-semibold text-legabit-charcoal underline-offset-4 hover:text-legabit-petrol hover:underline"
+            >
+              Ver artículos
             </Link>
-          </p>
-          <div className="grid gap-6 sm:grid-cols-2">
-            <article className="rounded-2xl border border-dashed border-border bg-accent/15 p-8">
-              <h3 className="text-xl font-semibold">Taller intensivo blockchain & penal</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Sesiones síncronas, casos reales sintéticos y checklists aplicables desde la primera semana.
-              </p>
-              <p className="mt-6 inline-flex rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-                Inscripciones · por anunciar
-              </p>
-            </article>
-            <article className="rounded-2xl border border-dashed border-border bg-accent/15 p-8">
-              <h3 className="text-xl font-semibold">Ruta autoguiada: compliance Web3</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Módulos cortos, evaluaciones y material descargable para escalar tu asesoría sin perder rigor.
-              </p>
-              <p className="mt-6 inline-flex rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-                Lista de espera · activa con el newsletter
-              </p>
-            </article>
           </div>
+          <ul className="grid gap-6 sm:grid-cols-3">
+            {blogPosts.slice(0, 3).map((post) => (
+              <li key={post.slug}>
+                <Link href={`/blog/${post.slug}`} className="group block h-full">
+                  <article className="flex h-full flex-col rounded-xl border border-border bg-accent/15 p-6 shadow-sm transition-all group-hover:border-legabit-gold/50 group-hover:shadow-md">
+                    <MarketingBadge>{post.tag}</MarketingBadge>
+                    <h3 className="mt-4 font-semibold leading-snug group-hover:text-legabit-petrol">
+                      {post.title}
+                    </h3>
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+                      {post.excerpt}
+                    </p>
+                    <p className="mt-5 text-xs font-medium text-legabit-gold">Leer artículo</p>
+                  </article>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </section>
 
-        <section className="border-t border-border bg-muted/20 py-16 sm:py-20" id="recursos">
-          <div className="mx-auto max-w-5xl px-6">
-            <SectionTitle
-              eyebrow="Próximamente"
-              title="Recursos"
-              lead="Biblioteca de guías, glosario jurídico–técnico y plantillas que acompañan tu práctica diaria."
-            />
-            <p className="-mt-4 mb-10">
-              <Link href="/recursos" className="text-sm font-semibold text-legabit-charcoal underline-offset-4 hover:underline hover:text-legabit-petrol">
-                Ver biblioteca de recursos
-              </Link>
-            </p>
-            <div className="grid gap-4 sm:grid-cols-3">
-              {["Glosario jurídico Web3", "Checklist de debida diligencia", "Plantillas de comunicación a cliente"].map(
-                (name) => (
-                  <div
-                    key={name}
-                    className="rounded-xl border border-border bg-background/80 px-4 py-5 text-sm font-medium text-muted-foreground"
-                  >
-                    {name}
-                    <span className="mt-2 block text-xs font-normal text-muted-foreground/80">
-                      Disponible con el lanzamiento público del hub.
-                    </span>
-                  </div>
-                )
-              )}
+        <section className="border-y border-border bg-muted/25 py-16 sm:py-20" id="formacion-eventos">
+          <div className="mx-auto grid max-w-5xl gap-12 px-6 lg:grid-cols-2">
+            <div>
+              <SectionTitle
+                eyebrow="Formación"
+                title="Cursos y talleres"
+                lead="Rutas virtuales o presenciales para profesionales que quieren pasar de la lectura a la práctica."
+              />
+              <ul className="space-y-4">
+                {courses.slice(0, 2).map((course) => (
+                  <li key={course.slug}>
+                    <Link href={`/cursos/${course.slug}`} className="group block">
+                      <article className="rounded-xl border border-border bg-background p-5 shadow-sm transition-all group-hover:border-legabit-gold/50">
+                        <div className="flex flex-wrap gap-2">
+                          <MarketingBadge>{course.level}</MarketingBadge>
+                          <span className="rounded-full border border-border bg-muted/20 px-3 py-1 text-xs font-semibold text-muted-foreground">
+                            {course.duration}
+                          </span>
+                        </div>
+                        <h3 className="mt-3 font-semibold group-hover:text-legabit-petrol">
+                          {course.title}
+                        </h3>
+                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                          {course.excerpt}
+                        </p>
+                      </article>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <SectionTitle
+                eyebrow="Agenda"
+                title="Eventos"
+                lead="Un calendario para seguir encuentros próximos y consultar actividades pasadas del año."
+              />
+              <ul className="space-y-4">
+                {nextEvents.map((event) => (
+                  <li key={event.id}>
+                    <Link href="/eventos" className="group block">
+                      <article className="rounded-xl border border-border bg-background p-5 shadow-sm transition-all group-hover:border-legabit-gold/50">
+                        <div className="flex flex-wrap gap-2">
+                          <MarketingBadge>{event.track}</MarketingBadge>
+                          <span className="rounded-full border border-border bg-muted/20 px-3 py-1 text-xs font-semibold text-muted-foreground">
+                            {event.format}
+                          </span>
+                        </div>
+                        <h3 className="mt-3 font-semibold group-hover:text-legabit-petrol">
+                          {event.title}
+                        </h3>
+                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                          {event.date} · {event.location}
+                        </p>
+                      </article>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </section>
 
-        <section className="mx-auto max-w-5xl px-6 pb-24 pt-8" id="newsletter">
-          <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
-            <div className="space-y-6">
+        <section className="mx-auto max-w-5xl px-6 py-16 sm:py-20" id="newsletter">
+          <div className="grid gap-12 lg:grid-cols-[1fr_420px] lg:items-start">
+            <div className="space-y-5">
               <MarketingBadge>Newsletter</MarketingBadge>
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Empieza en dos pasos</h2>
-              <ol className="list-inside list-decimal space-y-3 text-sm leading-relaxed text-muted-foreground">
-                <li>
-                  <span className="font-medium text-foreground">Suscríbete al newsletter:</span> análisis claro,
-                  accionable y sin sobrecarga.
-                </li>
-                <li>
-                  <span className="font-medium text-foreground">Únete a la comunidad:</span> desde el envío te
-                  compartimos enlaces de acceso.
-                </li>
-              </ol>
-              <p className="text-sm text-muted-foreground">
-                Sin spam. Sin tecnicismos innecesarios. Los enlaces a Discord, Telegram y YouTube tienen URL por
-                defecto; puedes sobrescribirlos con{" "}
-                <code className="rounded bg-muted px-1 py-0.5 text-xs">NEXT_PUBLIC_LEGABIT_DISCORD_URL</code>,{" "}
-                <code className="rounded bg-muted px-1 py-0.5 text-xs">NEXT_PUBLIC_LEGABIT_TELEGRAM_URL</code> y{" "}
-                <code className="rounded bg-muted px-1 py-0.5 text-xs">NEXT_PUBLIC_LEGABIT_YOUTUBE_URL</code>.
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                Mantente al día con lo que realmente importa
+              </h2>
+              <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
+                Déjanos tu nombre, correo y teléfono para recibir nuevas publicaciones, episodios, cursos y eventos de
+                Legabit.
               </p>
-              <SocialLinks />
+              <Link
+                href="/newsletter"
+                className="inline-flex rounded-lg border border-border bg-background px-4 py-2 text-sm font-semibold transition-colors hover:border-legabit-petrol hover:text-legabit-petrol"
+              >
+                Ver página del newsletter
+              </Link>
             </div>
             <NewsletterForm variant="card" source="landing" />
           </div>

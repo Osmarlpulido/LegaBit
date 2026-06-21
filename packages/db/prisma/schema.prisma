@@ -148,6 +148,7 @@ model NewsletterSubscriber {
   id           String   @id @default(cuid())
   email        String   @unique
   displayName  String?
+  phone        String?
   /// landing, footer, popup, etc.
   source       String   @default("landing")
   createdAt    DateTime @default(now())

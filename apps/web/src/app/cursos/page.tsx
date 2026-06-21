@@ -9,7 +9,7 @@ import { courses } from "@/lib/cursos-data";
 export const metadata: Metadata = {
   title: "Cursos y talleres — Legabit",
   description:
-    "Formación tipo LMS para equipos jurídicos: vídeos por lección, proyectos prácticos y tablero colaborativo."
+    "Formación tipo LMS sobre derecho, tecnología y finanzas: vídeos por lección, proyectos prácticos y tablero colaborativo."
 };
 
 
@@ -27,8 +27,8 @@ const leaderboard: LeaderRow[] = [
   {
     rank: 1,
     displayName: "María G.",
-    role: "Penal · CDMX",
-    projectTitle: "Memo de diligencia retail vs. institucional",
+    role: "Legal ops · CDMX",
+    projectTitle: "Memo ejecutivo de decisión digital",
     lessonsDone: 4,
     communityScore: 184,
     highlight: "Proyecto destacado"
@@ -37,15 +37,15 @@ const leaderboard: LeaderRow[] = [
     rank: 2,
     displayName: "Diego R.",
     role: "Compliance · Bogotá",
-    projectTitle: "Outline caso exchange / congelamiento",
+    projectTitle: "Política interna de IA responsable",
     lessonsDone: 4,
     communityScore: 172
   },
   {
     rank: 3,
     displayName: "Laura M.",
-    role: "Litigio · Madrid",
-    projectTitle: "Narrativa para tribunal sin jerga técnica",
+    role: "Fintech · Madrid",
+    projectTitle: "Flujo de onboarding con controles",
     lessonsDone: 3,
     communityScore: 156
   },
@@ -53,15 +53,15 @@ const leaderboard: LeaderRow[] = [
     rank: 4,
     displayName: "Andrés V.",
     role: "Asesoría independiente · Lima",
-    projectTitle: "Checklist diligencia tokenizada",
+    projectTitle: "Matriz legal-financiera de producto",
     lessonsDone: 3,
     communityScore: 141
   },
   {
     rank: 5,
     displayName: "Paula S.",
-    role: "Penal económico · Santiago",
-    projectTitle: "Preguntas clave primera reunión wallets",
+    role: "Producto financiero · Santiago",
+    projectTitle: "Revisión de claims comerciales",
     lessonsDone: 2,
     communityScore: 98
   }
@@ -90,7 +90,7 @@ export default function CursosPage() {
         <SectionTitle
           eyebrow="Legabit"
           title="Cursos y talleres"
-          lead="Formación tipo LMS para equipos jurídicos: vídeos por lección, proyectos prácticos y tablero colaborativo."
+          lead="Cursos virtuales y talleres presenciales para convertir información sobre derecho, tecnología y finanzas en práctica profesional."
         />
 
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-16">
@@ -145,7 +145,7 @@ export default function CursosPage() {
           <SectionTitle
             eyebrow="Comunidad"
             title="Tablero de proyectos valorados"
-            lead="Quienes completan los proyectos pueden compartirlos en el espacio comunitario. El puntaje refleja valoraciones de otros estudiantes y mentores (demo estática hasta integrar backend)."
+            lead="Quienes completan los proyectos pueden compartirlos en el espacio comunitario. El puntaje refleja valoraciones de estudiantes y tutores (demo estática hasta integrar backend)."
           />
 
           <div className="overflow-x-auto rounded-2xl border border-border bg-muted/15">

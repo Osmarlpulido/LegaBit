@@ -6,8 +6,8 @@ import { MarketingBadge, SectionTitle } from "@/components/marketing/marketing-s
 import { blogPosts } from "@/lib/blog-data";
 
 export const metadata: Metadata = {
-  title: "Blog — Legabit",
-  description: "Análisis jurídicos sobre blockchain, Web3 y derecho penal con foco práctico."
+  title: "Artículos — Legabit",
+  description: "Artículos sobre derecho, tecnología y finanzas con foco práctico."
 };
 
 export default function BlogPage() {
@@ -16,8 +16,8 @@ export default function BlogPage() {
       <div className="mx-auto max-w-5xl px-6 py-14 sm:py-20">
         <SectionTitle
           eyebrow="Legabit"
-          title="Blog"
-          lead="Artículos y análisis para decidir con criterio cuando la tecnología atraviesa el derecho penal y la asesoría estratégica."
+          title="Artículos"
+          lead="Publicaciones escritas por administradores y colaboradores para leer con criterio los cruces entre derecho, tecnología y finanzas."
         />
 
         <ul className="grid gap-6 sm:grid-cols-2">

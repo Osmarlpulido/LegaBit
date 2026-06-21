@@ -159,7 +159,7 @@ export default async function CourseDetailPage({ params }: Props) {
             Únete al newsletter para estar entre los primeros en el lanzamiento.
           </p>
           <Link
-            href="/#newsletter"
+            href="/newsletter"
             className="mt-4 inline-block rounded-lg bg-legabit-charcoal px-5 py-2.5 text-sm font-medium text-legabit-ivory hover:bg-legabit-petrol transition-colors"
           >
             Únete al newsletter

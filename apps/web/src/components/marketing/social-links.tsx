@@ -1,4 +1,4 @@
-import { getDiscordUrl, getTelegramUrl, getYoutubeUrl } from "@/lib/marketing-env";
+import { getDiscordUrl, getSpotifyUrl, getTelegramUrl, getYoutubeUrl } from "@/lib/marketing-env";
 
 import type { ReactNode } from "react";
 
@@ -29,6 +29,7 @@ export function SocialLinks() {
   const discord = getDiscordUrl();
   const telegram = getTelegramUrl();
   const youtube = getYoutubeUrl();
+  const spotify = getSpotifyUrl();
 
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -49,6 +50,12 @@ export function SocialLinks() {
           <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
         </svg>
         <span aria-hidden>YouTube</span>
+      </SocialButton>
+      <SocialButton href={spotify} label="Podcast Legabit en Spotify">
+        <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0Zm5.504 17.307a.747.747 0 0 1-1.027.247c-2.812-1.718-6.352-2.107-10.523-1.154a.747.747 0 0 1-.332-1.456c4.565-1.043 8.477-.593 11.636 1.338a.747.747 0 0 1 .246 1.025Zm1.47-3.273a.934.934 0 0 1-1.284.308c-3.22-1.979-8.128-2.552-11.938-1.397a.934.934 0 0 1-.542-1.788c4.352-1.32 9.76-.681 13.456 1.59a.934.934 0 0 1 .308 1.287Zm.126-3.41c-3.863-2.294-10.238-2.505-13.928-1.386a1.12 1.12 0 0 1-.65-2.144c4.236-1.285 11.28-1.037 15.72 1.598a1.12 1.12 0 1 1-1.142 1.932Z" />
+        </svg>
+        <span aria-hidden>Spotify</span>
       </SocialButton>
     </div>
   );

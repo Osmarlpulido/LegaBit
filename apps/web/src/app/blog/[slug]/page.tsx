@@ -51,7 +51,7 @@ export default async function BlogPostPage({ params }: Props) {
             >
               <path d="m15 18-6-6 6-6" />
             </svg>
-            Volver al Blog
+            Volver a Artículos
           </Link>
         </nav>
 

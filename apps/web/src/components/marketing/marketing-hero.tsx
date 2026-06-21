@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 import { SocialLinks } from "@/components/marketing/social-links";
 
@@ -14,45 +15,52 @@ function Badge({ children }: { children: string }) {
 
 export function MarketingHero() {
   return (
-    <section className="border-b border-border bg-gradient-to-b from-legabit-gold/18 via-legabit-ivory/80 to-background">
-      <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
+    <section
+      className="min-h-[680px] border-b border-border bg-legabit-ivory bg-cover bg-center"
+      style={{ backgroundImage: "url('/legabit-ecosystem-hero.svg')" }}
+    >
+      <div className="mx-auto flex min-h-[680px] max-w-5xl items-center px-6 py-20 sm:py-24">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="max-w-3xl space-y-8"
+          className="max-w-2xl space-y-8"
         >
-          <Badge>Derecho penal + blockchain/Web3</Badge>
+          <div className="flex flex-wrap gap-2">
+            <Badge>Derecho</Badge>
+            <Badge>Tecnología</Badge>
+            <Badge>Finanzas</Badge>
+          </div>
           <div className="space-y-4">
             <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-              Blockchain está redibujando el mapa legal.{" "}
+              Legabit.{" "}
               <span className="font-normal text-muted-foreground">
-                Legabit te ayuda a entenderlo con criterio y autoridad.
+                Un ecosistema para aprender, analizar y conectar ideas entre derecho, tecnología y finanzas.
               </span>
             </h1>
             <p className="text-lg leading-relaxed text-muted-foreground">
-              Newsletter, comunidad y formación práctica para abogados y profesionales que necesitan claridad jurídica
-              — sin ruido técnico y sin convertirse en programadores.
+              Podcasts, newsletters, artículos, cursos y eventos para profesionales que necesitan entender la
+              transformación digital con criterio jurídico, financiero y operativo.
             </p>
           </div>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <a
-              href="#newsletter"
+            <Link
+              href="/newsletter"
               className="inline-flex items-center justify-center rounded-lg bg-legabit-charcoal px-5 py-3 text-sm font-semibold text-legabit-ivory transition-colors hover:bg-legabit-petrol"
             >
-              Unirme al newsletter
-            </a>
-            <a
-              href="#como-funciona"
+              Recibir el newsletter
+            </Link>
+            <Link
+              href="/eventos"
               className="inline-flex items-center justify-center rounded-lg border border-legabit-charcoal/15 bg-background px-5 py-3 text-sm font-semibold transition-colors hover:border-legabit-petrol/45 hover:text-legabit-petrol"
             >
-              Cómo funciona
-            </a>
+              Ver eventos
+            </Link>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3">
             <p className="max-w-xl text-sm text-muted-foreground">
-              Síguenos en Discord, Telegram y YouTube; el acceso detallado a la comunidad también lo compartimos desde
-              el newsletter.
+              Sigue la conversación en comunidad y medios. El newsletter concentra convocatorias, artículos nuevos y
+              lanzamientos de cursos.
             </p>
             <SocialLinks />
           </div>

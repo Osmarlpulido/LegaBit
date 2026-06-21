@@ -22,118 +22,121 @@ const DEMO_EMBED = "https://www.youtube.com/embed/aqz-KE-bpKQ";
 
 export const courses: Course[] = [
   {
-    slug: "blockchain-penal-taller",
-    tag: "Ruta piloto",
-    title: "Blockchain & penal: taller aplicado",
+    slug: "derecho-tecnologia-finanzas",
+    tag: "Ruta base",
+    title: "Derecho, tecnología y finanzas: fundamentos para decidir",
     excerpt:
-      "Formación tipo LMS para equipos jurídicos: vídeos por lección, proyectos prácticos y tablero colaborativo.",
-    level: "Intermedio",
-    duration: "1h 45min",
+      "Una ruta introductoria para entender modelos digitales, riesgos legales y criterios financieros sin jerga innecesaria.",
+    level: "Básico",
+    duration: "1h 50min",
     lessons: [
       {
-        id: "l1",
-        title: "Mapa mental: cadena de custodia digital",
-        durationMin: 18,
+        id: "dtf-1",
+        title: "Mapa del ecosistema: actores, incentivos y obligaciones",
+        durationMin: 22,
         videoEmbedSrc: DEMO_EMBED,
         brief:
-          "Diferencia entre evidencia convencional y huellas on-chain: qué puede probarse, qué reinterpretarse y qué documentar desde el primer contacto con el cliente.",
-        cta: "Antes de la siguiente lección, anota tres preguntas que harías en una primera reunión sobre wallets y exchanges."
+          "Panorama de empresas, usuarios, reguladores, proveedores tecnológicos y equipos financieros que participan en productos digitales.",
+        cta: "Identifica tres actores clave de un producto digital que conozcas y escribe qué riesgo asume cada uno."
       },
       {
-        id: "l2",
-        title: "Perfiles de cliente y umbral de diligencia",
-        durationMin: 22,
+        id: "dtf-2",
+        title: "Riesgo legal y riesgo financiero no son conversaciones separadas",
+        durationMin: 28,
         brief:
-          "Matriz rápida retail vs. institucional vs. proyectos startup: documentación mínima, alertas rojas y cómo escalar sin frenar el negocio.",
+          "Cómo una promesa comercial, un flujo de caja o una comisión puede cambiar la lectura jurídica de un proyecto.",
         project:
-          "Redacta un «memo de una página» para tu despacho con los cinco riesgos prioritarios según tipo de cliente."
+          "Prepara una matriz simple con riesgo legal, riesgo financiero y evidencia requerida para una iniciativa digital."
       },
       {
-        id: "l3",
-        title: "Comunicación al tribunal: narrativa sin hype técnico",
-        durationMin: 25,
+        id: "dtf-3",
+        title: "Tecnología aplicada: datos, automatización e infraestructura",
+        durationMin: 26,
         brief:
-          "Cómo traducir grafos y timestamps a argumentos que encajan en oralidad y escritura procesal sin perder precisión.",
-        cta: "Elige un caso público resumido y escribe dos párrafos de informe como si fueran para un juez no especializado."
+          "Conceptos técnicos mínimos para hacer mejores preguntas sin convertirse en desarrollador.",
+        cta: "Redacta cinco preguntas para una reunión con producto o tecnología."
       },
       {
-        id: "l4",
-        title: "Taller: caso sintético «exchange y congelamiento»",
-        durationMin: 40,
+        id: "dtf-4",
+        title: "Taller de cierre: memo ejecutivo de decisión",
+        durationMin: 34,
         brief:
-          "Simulación guiada con líneas de tiempo, órdenes y comunicaciones mock. Enfocado en decisión bajo incertidumbre.",
+          "Estructura de una recomendación breve para dirección, cliente o comité interno.",
         project:
-          "Entrega la línea defensiva preliminar en formato colaborativo (outline + preguntas abiertas). La comunidad podrá valorar claridad y rigor."
+          "Entrega un memo de una página con contexto, riesgos, opciones y próximos pasos."
       }
     ]
   },
   {
-    slug: "defi-para-abogados",
-    tag: "Próximo",
-    title: "DeFi para abogados: protocolos, riesgos y regulación",
+    slug: "ia-para-equipos-legales",
+    tag: "Taller",
+    title: "IA para equipos legales: procesos, límites y supervisión",
     excerpt:
-      "Comprende cómo funcionan los protocolos descentralizados y su impacto en compliance, litigio y asesoría.",
-    level: "Básico-Intermedio",
-    duration: "2h 30min",
+      "Diseña flujos de trabajo con IA manteniendo confidencialidad, control humano y trazabilidad de decisiones.",
+    level: "Intermedio",
+    duration: "2h 15min",
     lessons: [
       {
-        id: "d1",
-        title: "¿Qué es DeFi? Conceptos sin código",
-        durationMin: 20,
+        id: "ia-1",
+        title: "Casos de uso legales con valor real",
+        durationMin: 24,
         brief:
-          "Exchanges descentralizados, lending, yield farming y stablecoins explicados en términos jurídicamente relevantes.",
-        cta: "¿Cuáles son los tres riesgos legales más evidentes en un exchange descentralizado?"
+          "Identificación de tareas repetibles, criterios de calidad y puntos donde la automatización sí reduce carga.",
+        cta: "Lista diez tareas del equipo y marca cuáles requieren juicio profesional final."
       },
       {
-        id: "d2",
-        title: "Smart contracts: qué puede y qué no puede hacer el abogado",
+        id: "ia-2",
+        title: "Política interna de uso responsable",
+        durationMin: 35,
+        brief:
+          "Reglas de datos, aprobación, auditoría y comunicación cuando se usan herramientas generativas.",
+        project:
+          "Escribe el primer borrador de una política de IA de una página para tu organización."
+      },
+      {
+        id: "ia-3",
+        title: "Medición de impacto y control de errores",
         durationMin: 30,
         brief:
-          "Naturaleza jurídica de los contratos inteligentes, ejecución automática y sus implicaciones en defensa y compliance.",
-        project: "Analiza un contrato DeFi público y enumera sus cláusulas implícitas en lenguaje jurídico."
-      },
-      {
-        id: "d3",
-        title: "MiCA y regulación global DeFi",
-        durationMin: 35,
-        brief:
-          "Estado actual de la regulación europea y comparativa con EE.UU. y APAC. Qué está regulado y qué sigue en zona gris.",
-        cta: "Redacta un resumen ejecutivo de dos páginas sobre el impacto de MiCA en un protocolo DeFi hipotético."
+          "Cómo evaluar ahorro de tiempo, calidad de salida y riesgos de dependencia excesiva.",
+        cta: "Define tres métricas para medir un piloto de IA durante cuatro semanas."
       }
     ]
   },
   {
-    slug: "tokenizacion-activos-reales",
+    slug: "fintech-compliance-producto",
     tag: "Próximo",
-    title: "Tokenización de activos reales: estructura jurídica",
+    title: "Fintech, compliance y producto: taller aplicado",
     excerpt:
-      "Cómo estructurar legalmente la tokenización de inmuebles, deuda y otros activos del mundo real.",
-    level: "Avanzado",
-    duration: "3h",
+      "Aprende a revisar productos financieros digitales desde onboarding, datos, pagos y comunicación comercial.",
+    level: "Intermedio",
+    duration: "2h 40min",
     lessons: [
       {
-        id: "t1",
-        title: "¿Qué es un token de seguridad? Clasificación regulatoria",
-        durationMin: 25,
+        id: "fc-1",
+        title: "Modelo de negocio y obligaciones regulatorias",
+        durationMin: 30,
         brief:
-          "Test de Howey y equivalentes en Europa. Diferencias entre utility token, security token y payment token.",
-        cta: "Clasifica cinco tokens conocidos usando el test de Howey y justifica tu respuesta."
+          "Lectura inicial de ingresos, usuarios, terceros y flujos de dinero para detectar obligaciones relevantes.",
+        cta: "Resume el modelo de negocio de una fintech en diez líneas."
       },
       {
-        id: "t2",
-        title: "Estructura de una STO: vehículos y jurisdicciones",
-        durationMin: 40,
+        id: "fc-2",
+        title: "Onboarding, datos y prevención de abuso",
+        durationMin: 38,
         brief:
-          "SPVs, fondos de inversión tokenizados y estructuras híbridas. Elección de jurisdicción y sus implicaciones.",
-        project: "Diseña la estructura legal básica para una tokenización de cartera inmobiliaria."
+          "Controles mínimos para conocer usuarios, reducir fraude y documentar decisiones sensibles.",
+        project:
+          "Diseña un flujo de onboarding con puntos de control legal, financiero y operativo."
       },
       {
-        id: "t3",
-        title: "Due diligence y riesgos en tokenización",
-        durationMin: 35,
+        id: "fc-3",
+        title: "Revisión de claims y comunicación al usuario",
+        durationMin: 32,
         brief:
-          "Checklist de due diligence específica para activos tokenizados: técnica, legal y financiera.",
-        cta: "Identifica tres riesgos no cubiertos en la regulación actual."
+          "Cómo revisar promesas de rentabilidad, beneficios, costos, riesgos y soporte en lenguaje claro.",
+        project:
+          "Reescribe una comunicación comercial para que sea clara, precisa y verificable."
       }
     ]
   }

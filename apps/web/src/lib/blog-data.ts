@@ -11,217 +11,152 @@ export type BlogPost = {
 
 export const blogPosts: BlogPost[] = [
   {
-    slug: "criptoactivos-derecho-penal",
+    slug: "regulacion-tecnologia-finanzas",
     tag: "Análisis",
-    title: "Criptoactivos y derecho penal: mapa de riesgos para la asesoría",
+    title: "Regulación, tecnología y finanzas: cómo leer una agenda que cambia rápido",
     excerpt:
-      "Marco práctico para priorizar líneas defensivas y preguntas clave ante clientes institucionales.",
+      "Un marco práctico para seguir cambios normativos sin perder de vista producto, riesgo y estrategia.",
     date: "Próximamente",
-    readingTime: "8 min",
+    readingTime: "7 min",
     author: "Equipo Legabit",
     content: `
-## Introducción
+## Por qué unir las tres conversaciones
 
-El crecimiento del mercado de criptoactivos ha abierto un nuevo frente para la asesoría jurídica penal. Desde operaciones en exchanges hasta participación en protocolos DeFi, las implicaciones legales son diversas y en constante evolución.
+El derecho, la tecnología y las finanzas ya no avanzan por carriles separados. Una decisión de producto puede activar obligaciones regulatorias, modificar el perfil de riesgo financiero y cambiar la forma en que una organización documenta sus procesos.
 
-## Marco normativo actual
+## Tres preguntas guía
 
-La regulación de criptoactivos varía significativamente por jurisdicción. En España, el Real Decreto 7/2021 y la posterior regulación MiCA (Markets in Crypto-Assets) establecen el marco para los proveedores de servicios de activos virtuales.
+1. ¿Qué problema económico resuelve el producto?
+2. ¿Qué tecnología habilita esa promesa y qué datos procesa?
+3. ¿Qué deberes legales aparecen cuando el producto escala?
 
-## Riesgos penales más comunes
+## Señales para priorizar
 
-### 1. Blanqueo de capitales
-El uso de mixing services, la fragmentación de transacciones y el uso de monedas de privacidad pueden generar indicios de actividad ilícita.
+- Nuevos flujos de dinero o custodia de activos
+- Automatización de decisiones relevantes para usuarios
+- Tratamiento intensivo de datos personales o financieros
+- Promesas comerciales difíciles de verificar
 
-### 2. Fraude y estafa
-Los esquemas Ponzi tokenizados, los rug pulls y los proyectos fraudulentos son frecuentes en el ecosistema.
+## Cierre
 
-### 3. Evasión fiscal
-La no declaración de ganancias en activos digitales es uno de los delitos fiscales más comunes relacionados con cripto.
-
-## Preguntas clave para la primera reunión
-
-1. ¿Tiene documentación del origen de los fondos invertidos?
-2. ¿Usó exchanges KYC o non-KYC?
-3. ¿Participó en proyectos DeFi? ¿Tiene registro de transacciones?
-4. ¿Recibió rendimientos? ¿Los declaró?
-
-## Conclusión
-
-La asesoría penal en criptoactivos requiere combinar conocimiento jurídico sólido con comprensión técnica del ecosistema blockchain.
+La lectura útil no consiste en perseguir cada noticia, sino en construir criterio para saber qué merece atención, qué puede esperar y qué exige asesoría especializada.
     `.trim()
   },
   {
-    slug: "trazabilidad-on-chain",
-    tag: "Tendencias",
-    title: "Trazabilidad on-chain sin perder rigor jurídico",
-    excerpt: "Cómo comunicar evidencia digital sin sobrecarga técnica ante jueces y equipos externos.",
+    slug: "ia-practica-legal",
+    tag: "Tecnología",
+    title: "IA en la práctica legal: productividad sin renunciar al criterio profesional",
+    excerpt:
+      "Cómo incorporar herramientas de automatización en equipos jurídicos manteniendo supervisión, confidencialidad y trazabilidad.",
     date: "Próximamente",
     readingTime: "6 min",
     author: "Equipo Legabit",
     content: `
-## El reto de la evidencia blockchain
+## El punto de partida
 
-Las blockchains son registros inmutables y públicamente verificables. Sin embargo, traducir esta información técnica a argumentos jurídicamente sólidos es un reto específico de esta práctica.
+La inteligencia artificial puede ayudar a ordenar información, preparar borradores y acelerar investigación. El riesgo aparece cuando el equipo delega juicio profesional en una salida que no entiende o no puede verificar.
 
-## Herramientas de análisis on-chain
+## Usos razonables
 
-Plataformas como Chainalysis, Elliptic o Crystal Blockchain permiten rastrear flujos de fondos y generar informes forenses. El perito técnico debe conocer estas herramientas.
+- Resumir documentos largos antes de una revisión humana
+- Preparar matrices de preguntas para entrevistas o auditorías
+- Comparar versiones de contratos y detectar cambios relevantes
+- Generar primeros borradores de comunicación interna
 
-## Comunicación al tribunal
+## Controles mínimos
 
-El error más común es inundar al tribunal con datos técnicos sin contexto. La clave está en:
+1. Definir qué datos nunca se cargan en herramientas externas.
+2. Registrar quién revisa y aprueba cada salida.
+3. Separar tareas de apoyo de decisiones jurídicas.
+4. Medir ahorro real de tiempo y errores detectados.
 
-- Narrar el flujo de fondos en lenguaje procesal
-- Usar líneas de tiempo visuales
-- Distinguir certezas de inferencias
+## Cierre
 
-## Buenas prácticas
-
-1. Solicitar el informe pericial completo con metodología explicada
-2. Preparar contrapreguntas técnicas para el perito contrario
-3. Verificar independientemente los datos en exploradores como Etherscan
+La adopción responsable no empieza por comprar software, sino por diseñar un proceso donde la herramienta tenga un rol claro y limitado.
     `.trim()
   },
   {
-    slug: "web3-lineas-ingreso-despachos",
-    tag: "Estrategia",
-    title: "Web3 y nuevas líneas de ingreso para despachos",
-    excerpt: "Productos de conocimiento, compliance y educación: qué encaja según tu escala y nicho.",
-    date: "Próximamente",
-    readingTime: "7 min",
-    author: "Equipo Legabit",
-    content: `
-## El nuevo mercado jurídico Web3
-
-La demanda de servicios jurídicos especializados en blockchain supera ampliamente la oferta actual. Los despachos que se posicionen ahora tendrán ventaja competitiva significativa.
-
-## Líneas de servicio más rentables
-
-### Compliance y AML
-Los exchanges, custodios y proveedores de servicios de activos virtuales necesitan estructuras de compliance robustas bajo MiCA y la 6AMLD.
-
-### Estructuración de proyectos
-Tokenización de activos reales, emisión de NFTs con valor jurídico, DAOs con estructura legal.
-
-### Formación interna
-Las empresas financieras tradicionales necesitan formar a sus equipos en Web3. Un despacho puede ofrecer esto como servicio de alto valor.
-
-## Consideraciones de escala
-
-- **Despacho individual**: formación, consultoría puntual
-- **Boutique 5-15 personas**: compliance continuado, estructuración
-- **Firma grande**: M&A cripto, tokenización institucional
-    `.trim()
-  },
-  {
-    slug: "due-diligence-proyectos-tokenizados",
-    tag: "Compliance",
-    title: "Due diligence en proyectos tokenizados: checklist mínimo viable",
+    slug: "finanzas-para-decisiones-legales",
+    tag: "Finanzas",
+    title: "Finanzas para decisiones legales: lo mínimo que un equipo jurídico debe mirar",
     excerpt:
-      "Documentación, perfiles de riesgo y señales de alerta temprana cuando el cliente acelera sin mapa legal.",
+      "Conceptos de caja, riesgo, incentivos y sostenibilidad que ayudan a evaluar productos digitales y acuerdos comerciales.",
     date: "Próximamente",
-    readingTime: "9 min",
+    readingTime: "8 min",
     author: "Equipo Legabit",
     content: `
-## Por qué la due diligence cripto es diferente
+## La dimensión financiera del riesgo legal
 
-A diferencia de la due diligence corporativa tradicional, en proyectos tokenizados debemos verificar tanto la estructura legal como la técnica y la económica del protocolo.
+Muchos problemas jurídicos se originan en incentivos financieros mal alineados: promesas de rentabilidad, modelos de comisión poco transparentes o estructuras de costos que empujan a asumir riesgos excesivos.
 
-## Checklist documentación
+## Indicadores útiles
 
-- [ ] Whitepaper completo y auditable
-- [ ] Identidad y antecedentes del equipo fundador
-- [ ] Auditoría de smart contracts por firma acreditada
-- [ ] Estructura legal de la entidad emisora
-- [ ] Tokenomics: distribución, vesting, inflación
-- [ ] Roadmap técnico con hitos verificables
+- Fuente de ingresos y dependencia de un solo canal
+- Costos variables cuando el producto escala
+- Liquidez disponible frente a obligaciones futuras
+- Incentivos de vendedores, afiliados o terceros
+- Exposición a cambios de tasa, moneda o mercado
 
-## Señales de alerta
+## Cómo usar esta lectura
 
-🔴 Equipo anónimo sin historial verificable
-🔴 Promesas de rendimientos garantizados
-🔴 Smart contracts sin auditar
-🔴 Presión para invertir rápido ("urgencia artificial")
-🔴 Documentación legal vaga o inexistente
+El objetivo no es convertir al abogado en analista financiero, sino mejorar las preguntas. Un contrato, una política de cumplimiento o una opinión legal cambia cuando el modelo económico no sostiene la promesa comercial.
 
-## Marco de evaluación de riesgo
+## Cierre
 
-Clasificar proyectos en tres niveles: bajo (infraestructura establecida), medio (proyectos en desarrollo con equipo conocido), alto (proyectos nuevos o anónimos).
+El criterio financiero permite detectar tensiones temprano y conversar mejor con fundadores, directores financieros y áreas de producto.
     `.trim()
   },
   {
-    slug: "encadenamiento-probatorio",
-    tag: "Litigio",
-    title: "Encadenamiento probatorio: qué pedir y qué no asumir del perito técnico",
-    excerpt: "Preguntas útiles para cruzar narrativa jurídica con datos sin convertir la audiencia en un hackathon.",
+    slug: "compliance-productos-digitales",
+    tag: "Compliance",
+    title: "Compliance en productos digitales: del checklist al sistema operativo",
+    excerpt:
+      "Una forma de pasar de controles aislados a procesos vivos para equipos que lanzan, miden y ajustan productos.",
     date: "Próximamente",
     readingTime: "7 min",
     author: "Equipo Legabit",
     content: `
-## El perito técnico en blockchain
+## El problema del checklist
 
-El perito en casos de criptomonedas cumple una función crucial: traducir datos técnicos a hechos jurídicamente relevantes. Sin embargo, su labor tiene límites que el abogado debe conocer.
+Un checklist ayuda a no olvidar pasos, pero no reemplaza un sistema. En productos digitales, las reglas cambian con cada iteración: onboarding, pagos, datos, comunicación comercial y soporte al usuario.
 
-## Qué puede y no puede demostrar un análisis blockchain
+## Elementos de un sistema
 
-**Puede demostrar:**
-- Que una dirección recibió o envió fondos
-- El timestamp de una transacción
-- La cadena de custodia de fondos
+1. Dueños claros por proceso.
+2. Registro de decisiones y fuentes usadas.
+3. Revisión legal antes de cambios sensibles.
+4. Indicadores de incidentes, quejas y fricción.
+5. Capacitación breve para equipos no jurídicos.
 
-**No puede demostrar directamente:**
-- Quién controla una dirección (sin evidencia complementaria)
-- La intención detrás de una transacción
-- La identidad del usuario de un exchange
+## Resultado esperado
 
-## Preguntas eficaces para el contrainterrogatorio
-
-1. ¿Qué metodología usó para atribuir la dirección al acusado?
-2. ¿Verificó independientemente los datos del informe de la plataforma de análisis?
-3. ¿Es posible que otra persona controlara esa dirección?
-
-## Buenas prácticas procesales
-
-Solicitar el informe pericial completo con metodología antes del juicio. Contratar perito técnico propio para contradicciones complejas.
+El cumplimiento funciona mejor cuando está integrado al ciclo de producto. No debe aparecer solo al final, cuando corregir es más costoso y políticamente más difícil.
     `.trim()
   },
   {
-    slug: "formacion-interna-despacho",
-    tag: "Educación",
-    title: "Formación interna del despacho: ritmos cortos que sí funcionan",
-    excerpt: "Sesiones de 45 minutos, casos sintéticos y documentación viva para equipos saturados.",
+    slug: "educacion-comunidad-profesional",
+    tag: "Comunidad",
+    title: "Educación y comunidad profesional: por qué aprender solo no escala",
+    excerpt:
+      "La combinación de artículos, cursos, eventos y conversación permite convertir información dispersa en criterio compartido.",
     date: "Próximamente",
     readingTime: "5 min",
     author: "Equipo Legabit",
     content: `
-## El problema de la formación en despachos
+## Aprender con otros
 
-Los abogados tienen poco tiempo. Los programas de formación largos y teóricos fracasan. Se necesita un enfoque diferente.
+Los temas emergentes cambian rápido. Aprender en comunidad permite contrastar dudas, compartir fuentes y convertir experiencia individual en conocimiento reutilizable.
 
-## Metodología de sesiones cortas
+## Formatos complementarios
 
-### Formato 45/5
-45 minutos de contenido práctico + 5 minutos de aplicación inmediata. Una pregunta o caso breve para discutir en equipo.
+- Artículos para ordenar ideas y dejar una referencia escrita
+- Podcasts para abrir conversaciones y escuchar distintos perfiles
+- Cursos para practicar con estructura y acompañamiento
+- Eventos para conectar personas, preguntas y oportunidades
 
-### Casos sintéticos
-Situaciones ficticias pero realistas. El equipo practica la toma de decisiones en condiciones de incertidumbre, similar a las situaciones reales.
+## Cierre
 
-### Documentación viva
-En lugar de manuales estáticos, mantener una base de conocimiento actualizable en Notion o similar. El equipo contribuye con sus propias notas de casos.
-
-## Implementación práctica
-
-1. Sesión semanal de 45 min (miércoles al mediodía)
-2. Rotación de liderazgo: cada socio o senior lidera una sesión al mes
-3. Repositorio compartido de casos y decisiones
-4. Revisión trimestral del material
-
-## Métricas de éxito
-
-- Tiempo de respuesta a consultas cripto (-30%)
-- Confianza del equipo en temas Web3 (encuesta interna)
-- Casos nuevos captados en nicho cripto
+Legabit existe para conectar esos formatos en un solo ecosistema, con foco en utilidad profesional y lenguaje claro.
     `.trim()
   }
 ];

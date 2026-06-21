@@ -7,10 +7,13 @@ CREATE TABLE IF NOT EXISTS "NewsletterSubscriber" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "displayName" TEXT,
+    "phone" TEXT,
     "source" TEXT NOT NULL DEFAULT 'landing',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "NewsletterSubscriber_pkey" PRIMARY KEY ("id")
 );
+
+ALTER TABLE "NewsletterSubscriber" ADD COLUMN IF NOT EXISTS "phone" TEXT;
 
 CREATE UNIQUE INDEX IF NOT EXISTS "NewsletterSubscriber_email_key" ON "NewsletterSubscriber" ("email");
 
