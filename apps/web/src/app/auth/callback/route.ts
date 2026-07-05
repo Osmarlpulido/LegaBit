@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { syncUserFromSupabase } from "@/lib/auth/sync-user";
 
 // Registra el correo verificado por Google en la lista del newsletter.
 // Usa la clave de servidor (omite RLS) e ignora duplicados.
@@ -43,7 +44,16 @@ export async function GET(request: Request) {
         (user?.user_metadata?.full_name as string | undefined) ??
         (user?.user_metadata?.name as string | undefined) ??
         null;
+      const imageUrl = (user?.user_metadata?.avatar_url as string | undefined) ?? null;
       await recordVerifiedEmail(user?.email, displayName);
+      if (user?.id && user?.email) {
+        await syncUserFromSupabase({
+          supabaseUserId: user.id,
+          email: user.email,
+          displayName,
+          imageUrl
+        });
+      }
 
       const forwardedHost = request.headers.get("x-forwarded-host");
       const isLocalEnv = process.env.NODE_ENV === "development";

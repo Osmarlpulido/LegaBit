@@ -14,8 +14,13 @@
     "generate": "dotenv -e ../../apps/web/.env.local -- prisma generate",
     "migrate": "dotenv -e ../../apps/web/.env.local -- prisma migrate dev",
     "studio": "dotenv -e ../../apps/web/.env.local -- prisma studio",
+    "seed": "dotenv -e ../../apps/web/.env.local -- ts-node prisma/seed.ts",
+    "seed:content": "dotenv -e ../../apps/web/.env.local -- ts-node prisma/seed-content.ts",
     "build": "dotenv -e ../../apps/web/.env.local -- prisma generate",
     "typecheck": "tsc --noEmit"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.1.0"

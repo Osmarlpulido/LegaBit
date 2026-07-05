@@ -1,5 +1,5 @@
 // LEGABIT — PostgreSQL es la fuente de verdad. RLS en Supabase complementa el aislamiento por tenant.
-// Mapeo: Clerk User → User | Clerk Organization → Organization
+// Identidad: supabaseUserId (UUID del JWT de Supabase Auth) es la clave de identidad externa.
 
 generator client {
   provider = "prisma-client-js"
@@ -41,35 +41,35 @@ enum InvitationStatus {
   expired
 }
 
-/// Usuario interno; `clerkUserId` es la clave de identidad externa.
+/// Usuario interno; `supabaseUserId` es el UUID del JWT de Supabase Auth (campo `sub`).
 model User {
-  id           String       @id @default(cuid())
-  clerkUserId  String       @unique
-  email        String
-  displayName  String?
-  imageUrl     String?
-  platformRole PlatformRole @default(none)
+  id              String       @id @default(cuid())
+  supabaseUserId  String       @unique
+  email           String
+  displayName     String?
+  imageUrl        String?
+  platformRole    PlatformRole @default(none)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  memberships Membership[]
+  memberships     Membership[]
   invitationsSent OrganizationInvitation[] @relation("InvitationInviter")
-  auditLogs   AuditLog[]
+  auditLogs       AuditLog[]
 
-  @@index([clerkUserId])
+  @@index([supabaseUserId])
   @@index([email])
 }
 
-/// Organización (tenant); `clerkOrganizationId` enlaza con Clerk cuando aplica.
+/// Organización (tenant).
 model Organization {
-  id                   String           @id @default(cuid())
-  clerkOrganizationId  String?          @unique
-  name                 String
-  slug                 String           @unique
-  type                 OrganizationType
-  stripeCustomerId     String?          @unique
+  id                    String           @id @default(cuid())
+  externalOrganizationId String?         @unique
+  name                  String
+  slug                  String           @unique
+  type                  OrganizationType
+  stripeCustomerId      String?          @unique
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -80,7 +80,6 @@ model Organization {
   auditLogs    AuditLog[]
 
   @@index([slug])
-  @@index([clerkOrganizationId])
 }
 
 /// Membresía: RBAC por organización. `super_admin` a nivel plataforma vive en `User.platformRole`.
@@ -156,15 +155,116 @@ model NewsletterSubscriber {
   @@index([createdAt])
 }
 
-// --- Plantilla para tablas operativas futuras (comentario de convención):
-// model ExampleEntity {
-//   id             String   @id @default(cuid())
-//   organizationId String
-//   createdById    String
-//   createdAt      DateTime @default(now())
-//   updatedAt      DateTime @updatedAt
-//   deletedAt      DateTime?
-//   organization   Organization @relation(fields: [organizationId], references: [id])
-//   createdBy      User         @relation(fields: [createdById], references: [id])
-//   @@index([organizationId])
-// }
+// ─── Contenido de la plataforma ──────────────────────────────────────────────
+
+enum EventFormat {
+  VIRTUAL
+  PRESENCIAL
+  HIBRIDO
+}
+
+enum EventTrack {
+  DERECHO
+  TECNOLOGIA
+  FINANZAS
+  COMUNIDAD
+}
+
+enum EventStatus {
+  UPCOMING
+  PAST
+}
+
+model BlogPost {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  tag         String
+  title       String
+  excerpt     String
+  content     String    @db.Text
+  readingTime String?
+  author      String    @default("Equipo Legabit")
+  publishedAt DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([slug])
+  @@index([publishedAt])
+}
+
+model Course {
+  id       String  @id @default(cuid())
+  slug     String  @unique
+  tag      String
+  title    String
+  excerpt  String
+  level    String
+  duration String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  lessons Lesson[]
+
+  @@index([slug])
+}
+
+model Lesson {
+  id            String  @id @default(cuid())
+  courseId      String
+  order         Int
+  title         String
+  durationMin   Int
+  videoEmbedSrc String?
+  brief         String  @db.Text
+  cta           String?
+  project       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId, order])
+}
+
+model PodcastEpisode {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  description String    @db.Text
+  topic       String
+  duration    String
+  youtubeUrl  String?
+  spotifyUrl  String?
+  publishedAt DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([publishedAt])
+}
+
+model LegabitEvent {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  title       String
+  description String      @db.Text
+  eventDate   DateTime
+  eventTime   String
+  format      EventFormat
+  location    String
+  track       EventTrack
+  status      EventStatus @default(UPCOMING)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([eventDate])
+  @@index([status])
+}
