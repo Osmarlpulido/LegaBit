@@ -1,8 +1,13 @@
 # Workstreams and backlog
 
+Status: in progress
+Last reviewed: 2026-07-12
+
 This document turns the migration phases into epics. Each epic should become smaller delivery tickets only after the blocking ADRs are approved.
 
 ## Epic A — architecture governance
+
+Status: in progress
 
 - A1. Record identity-provider ADR (`BLOCKING`).
 - A2. Record backend runtime/framework ADR (`BLOCKING`).
@@ -15,6 +20,8 @@ Acceptance: ADRs state context, decision, alternatives, consequences, owner, rev
 
 ## Epic B — contracts and API client
 
+Status: in progress — package rename and health/error contracts delivered; versioned product contracts, OpenAPI, compatibility checks, and frontend client remain
+
 - B1. Rename `packages/api` to a clearly non-executable contracts package.
 - B2. Define versioned newsletter, market, identity, health, and error schemas.
 - B3. Generate/check OpenAPI from the canonical schemas.
@@ -25,6 +32,8 @@ Acceptance: ADRs state context, decision, alternatives, consequences, owner, rev
 Acceptance: malformed requests and responses fail tests; a prior supported frontend contract remains compatible.
 
 ## Epic C — backend platform
+
+Status: in progress — executable API, validated configuration, request IDs, logging, centralized safe errors, health checks, graceful shutdown, MongoDB connection boundary, and initial tests delivered; routing, security defaults, integration database, full CI, and deployment remain
 
 - C1. Scaffold executable API and composition root.
 - C2. Validate environment at startup with secret-safe diagnostics.
@@ -39,6 +48,8 @@ Acceptance: the empty service is production-deployable, observable, safely termi
 
 ## Epic D — market-data module
 
+Status: not started
+
 - D1. Define provider-neutral market models.
 - D2. Implement validated query use case.
 - D3. Implement CoinGecko adapter with explicit timeout/retry policy.
@@ -50,6 +61,8 @@ Acceptance: the empty service is production-deployable, observable, safely termi
 Acceptance: provider changes do not affect the frontend contract; load does not exceed the agreed provider quota.
 
 ## Epic E — newsletter module and data reconciliation
+
+Status: not started
 
 - E1. Compare live PostgreSQL/Supabase schema and data to Prisma history in every environment.
 - E2. Design collections using access patterns, bounded-growth rules, references/embedding, consistency boundaries, validators, and indexes.
@@ -70,6 +83,8 @@ Acceptance: MongoDB is the sole verified write path; no records or required rela
 
 ## Epic F — identity, tenancy, and authorization
 
+Status: blocked by canonical identity-provider decision
+
 - F1. Implement JWT verification with issuer/audience/key-rotation tests.
 - F2. Define provider-neutral external identity schema.
 - F3. Backfill and validate existing identity mappings.
@@ -83,6 +98,8 @@ Acceptance: no caller can select an arbitrary tenant/user identity; backend auth
 
 ## Epic G — frontend isolation
 
+Status: not started
+
 - G1. Add forbidden-import rules for `@legabit/db`, backend modules, and server secrets.
 - G2. Migrate all server state to the central API client/query layer.
 - G3. Remove privileged Supabase client and database dependencies.
@@ -94,6 +111,8 @@ Acceptance: no caller can select an arbitrary tenant/user identity; backend auth
 Acceptance: a frontend build cannot access privileged infrastructure and can deploy without backend-only environment variables.
 
 ## Epic H — delivery and operations
+
+Status: not started — basic health and logging exist, but production delivery and operational controls do not
 
 - H1. Define environments, promotion flow, and independent release versioning.
 - H2. Implement migration job separate from web/API process startup.

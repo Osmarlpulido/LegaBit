@@ -1,5 +1,8 @@
 # Decisions and open questions
 
+Status: in progress
+Last reviewed: 2026-07-12
+
 Resolve `BLOCKING` items before implementing the phase that depends on them. Each decision should be recorded as an ADR rather than silently encoded in the first implementation pull request.
 
 ## Decision register
@@ -7,11 +10,11 @@ Resolve `BLOCKING` items before implementing the phase that depends on them. Eac
 | ID | Decision | Recommendation | Status | Blocks |
 |---|---|---|---|---|
 | D-01 | Canonical identity provider | Keep Supabase Auth because it is the active runtime; remove Clerk assumptions/config unless a near-term requirement justifies migration | `BLOCKING` | Identity schema, protected API |
-| D-02 | Backend runtime | Node.js/TypeScript with Fastify | `BLOCKING` | Backend scaffold |
+| D-02 | Backend runtime | Node.js/TypeScript with Fastify | Accepted and implemented | Backend scaffold |
 | D-03 | API topology | Separate backend deployment behind same-origin `/api/v1` proxy | `BLOCKING` | Deployment, auth transport |
 | D-04 | Persistence path | MongoDB with the official Node.js driver; retire Prisma/PostgreSQL and direct service-role PostgREST writes after verified migration | Accepted direction; design details `BLOCKING` | Backend data layer, newsletter extraction |
-| D-05 | Contract source | Zod schemas in renamed `api-contracts`, with generated/verified OpenAPI | Proposed | API foundation |
-| D-06 | Backend shape | Modular monolith until extraction criteria are met | Proposed | Module layout |
+| D-05 | Contract source | Zod schemas in renamed `api-contracts`, with generated/verified OpenAPI | Partially implemented; OpenAPI pending | API foundation |
+| D-06 | Backend shape | Modular monolith until extraction criteria are met | Accepted; foundation implemented | Module layout |
 | D-07 | Remote frontend state | TanStack Query through one typed API client | Proposed | Frontend cleanup |
 | D-08 | Market cache | Start platform/in-process; adopt shared cache based on scale/quota measurements | Open | Scale phase |
 | D-09 | Tenant isolation | Repository-enforced organization scope, backend authorization, least-privilege MongoDB roles, and mandatory negative tests | Proposed | Organization launch |

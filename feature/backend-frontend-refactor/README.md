@@ -1,8 +1,23 @@
 # Backend and frontend separation roadmap
 
-Status: proposed  
-Scope: architecture and migration planning only  
+Status: in progress
+Scope: architecture roadmap and incremental migration tracking
 Last reviewed: 2026-07-12
+
+## Progress snapshot
+
+| Area | Status | Evidence |
+|---|---|---|
+| Current-state assessment | Complete | Repository boundaries, risks, and baseline needs are documented |
+| Target architecture | Accepted for incremental implementation | Modular API boundary, MongoDB direction, and contract ownership are defined |
+| API foundation | In progress | `apps/api`, configuration validation, MongoDB connection management, health endpoints, errors, logging, shutdown, and tests are in PR #1 |
+| Shared API contracts | In progress | `packages/api` is renamed to `packages/api-contracts`; health contracts are added |
+| Market-data extraction | Not started | Existing Next.js crypto route remains active |
+| MongoDB provisioning and data migration | Not started | No production database, collections, indexes, validators, or data have been changed |
+| Newsletter extraction | Not started | Existing Next.js route and persistence paths remain active |
+| Identity and authorization boundary | Blocked | Canonical identity-provider decision remains open |
+| Frontend isolation | Not started | Next.js still owns existing server routes during migration |
+| Production routing and operations | Blocked | Deployment topology and MongoDB hosting decisions remain open |
 
 ## Goal
 

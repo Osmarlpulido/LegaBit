@@ -1,5 +1,9 @@
 # Target architecture
 
+Status: accepted for incremental implementation
+Implementation progress: API foundation in progress; product and data cutovers not started
+Last reviewed: 2026-07-12
+
 ## Architectural style
 
 Use an independently deployable **TypeScript modular monolith** for the backend. Organize it by business capability, with explicit application and infrastructure boundaries. Do not divide the initial backend into networked services.

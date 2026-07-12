@@ -1,5 +1,8 @@
 # Current-state assessment
 
+Status: complete
+Last reviewed: 2026-07-12
+
 ## Executive summary
 
 LegaBit is a Yarn/Turbo TypeScript monorepo with one executable application, `apps/web`. The application is primarily a marketing and education site with a crypto dashboard, newsletter subscription, Google authentication through Supabase, and a wallet connector. It also contains the current backend behavior in Next.js route handlers.

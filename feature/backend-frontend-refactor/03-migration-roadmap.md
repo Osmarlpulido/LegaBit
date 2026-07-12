@@ -1,5 +1,20 @@
 # Migration roadmap
 
+Status: in progress
+Last reviewed: 2026-07-12
+
+## Phase status
+
+| Phase | Status | Current result |
+|---|---|---|
+| Phase 0 — decisions and baseline | In progress | Architecture inventory and roadmap are complete; identity, topology, MongoDB hosting/modeling, consent, and live-data baseline decisions remain open |
+| Phase 1 — backend foundation | In progress | API workspace, contracts rename, config validation, MongoDB connection lifecycle, health checks, structured errors, logging, shutdown, and initial tests are implemented in PR #1; deployment, routing, OpenAPI, and full CI remain |
+| Phase 2 — market data | Not started | Existing Next.js route remains active |
+| Phase 3 — MongoDB/newsletter migration | Not started | No datastore or route cutover has occurred |
+| Phase 4 — identity and authorization | Blocked | Waiting for canonical identity-provider decision |
+| Phase 5 — frontend cleanup | Not started | Depends on route cutovers |
+| Phase 6 — operational hardening | Not started | Foundational health/logging work has begun, but production hardening has not |
+
 ## Strategy
 
 Use an incremental strangler migration. Establish contracts and deployment plumbing first, move one low-risk route at a time, and keep compatibility rewrites until traffic proves the old path is unused. Every phase must be independently releasable and reversible.
@@ -7,6 +22,8 @@ Use an incremental strangler migration. Establish contracts and deployment plumb
 Effort labels are relative (`S`, `M`, `L`) and should be converted into team estimates after the blocking decisions are made.
 
 ## Phase 0 — decisions and behavioral baseline (`M`)
+
+Phase status: in progress
 
 ### Work
 
@@ -26,6 +43,8 @@ Effort labels are relative (`S`, `M`, `L`) and should be converted into team est
 - Rollback owner and deployment environments are documented.
 
 ## Phase 1 — backend foundation (`L`)
+
+Phase status: in progress
 
 ### Work
 
@@ -48,6 +67,8 @@ Effort labels are relative (`S`, `M`, `L`) and should be converted into team est
 
 ## Phase 2 — extract market data (`M`)
 
+Phase status: not started
+
 Market data is first because it is read-only and has no user data or database migration.
 
 ### Work
@@ -67,6 +88,8 @@ Market data is first because it is read-only and has no user data or database mi
 - Rollback is a routing/flag change; no data rollback is required.
 
 ## Phase 3 — migrate persistence and extract newsletter (`L–XL`)
+
+Phase status: not started
 
 ### Work
 
@@ -94,6 +117,8 @@ Market data is first because it is read-only and has no user data or database mi
 
 ## Phase 4 — identity and authorization boundary (`L`)
 
+Phase status: blocked by D-01
+
 ### Work
 
 - Implement backend JWT verification and current-actor request context.
@@ -113,6 +138,8 @@ Market data is first because it is read-only and has no user data or database mi
 
 ## Phase 5 — frontend boundary cleanup (`M`)
 
+Phase status: not started
+
 ### Work
 
 - Route every remote call through the typed API client.
@@ -131,6 +158,8 @@ Market data is first because it is read-only and has no user data or database mi
 - Frontend and API releases can be rolled back independently within the compatibility window.
 
 ## Phase 6 — operational hardening and scale validation (`M–L`)
+
+Phase status: not started
 
 ### Work
 

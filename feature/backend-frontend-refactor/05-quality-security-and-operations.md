@@ -1,5 +1,10 @@
 # Quality, security, and operations plan
 
+Status: in progress
+Last reviewed: 2026-07-12
+
+Implemented foundation: backend configuration unit tests; liveness/readiness HTTP tests; TypeScript build/typecheck; structured Fastify logging; request IDs; safe generic errors; MongoDB connection timeout; and graceful shutdown. All other requirements in this document remain planned unless explicitly identified as implemented.
+
 ## Test strategy
 
 Use a test pyramid organized around architectural boundaries.
