@@ -1,4 +1,5 @@
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 import { getCurrentUser } from "@/lib/auth/current-user";
 
 export async function HeaderAuth() {
@@ -15,14 +16,7 @@ export async function HeaderAuth() {
           {user.email}
         </span>
       ) : null}
-      <form action="/auth/signout" method="post">
-        <button
-          type="submit"
-          className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:border-legabit-petrol/40 hover:text-legabit-petrol"
-        >
-          Cerrar sesión
-        </button>
-      </form>
+      <SignOutButton />
     </div>
   );
 }

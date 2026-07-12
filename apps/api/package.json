@@ -1,0 +1,36 @@
+{
+  "name": "@legabit/backend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "build": "yarn openapi:check && tsc -p tsconfig.build.json",
+    "start": "node dist/main.js",
+    "lint": "tsc --noEmit",
+    "migrate": "node --import tsx src/migrations/newsletter-indexes.ts",
+    "migrate:newsletter-indexes": "yarn migrate",
+    "openapi:check": "node --import tsx src/openapi.ts --check",
+    "openapi:compat": "node scripts/check-openapi-compat.mjs",
+    "openapi:compat:test": "node --test scripts/check-openapi-compat.test.mjs",
+    "openapi:generate": "node --import tsx src/openapi.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "tsc -p tsconfig.test.json && node --test dist-test/**/*.test.js"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.3.0",
+    "@fastify/swagger": "^9.8.0",
+    "@legabit/api-contracts": "*",
+    "@opentelemetry/api": "^1.9.0",
+    "better-auth": "~1.5.6",
+    "fastify": "^5.2.1",
+    "mongodb": "^6.12.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "openapi-types": "^12.1.3",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

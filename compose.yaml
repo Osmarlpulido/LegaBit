@@ -1,0 +1,41 @@
+services:
+  mongodb:
+    image: mongo:7.0
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mongosh --quiet --eval 'quit(db.adminCommand({ replSetGetStatus: 1 }).ok === 1 ? 0 : 1)'",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+    restart: unless-stopped
+
+  mongodb-init:
+    image: mongo:7.0
+    depends_on:
+      mongodb:
+        condition: service_started
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        until mongosh --host mongodb:27017 --quiet
+        --eval 'quit(db.adminCommand({ ping: 1 }).ok === 1 ? 0 : 1)';
+        do sleep 2; done;
+        mongosh --host mongodb:27017 --quiet --eval
+        'try { rs.status() } catch (error) {
+          if (error.codeName === "NotYetInitialized") {
+            rs.initiate({ _id: "rs0", members: [{ _id: 0, host: "localhost:27017" }] })
+          } else { throw error }
+        }'
+    restart: "no"
+
+volumes:
+  mongodb-data:

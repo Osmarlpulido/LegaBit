@@ -13,9 +13,6 @@
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck"
   },
-  "dependencies": {
-    "@legabit/db": "*"
-  },
   "devDependencies": {
     "typescript": "^5.7.2"
   }

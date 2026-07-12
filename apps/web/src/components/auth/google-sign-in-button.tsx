@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { authClient } from "@/lib/auth/client";
 
 type GoogleSignInButtonProps = {
   next?: string;
@@ -22,17 +22,15 @@ export function GoogleSignInButton({
     setLoading(true);
     setError(null);
     try {
-      const supabase = createSupabaseBrowserClient();
-      const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
-      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      const result = await authClient.signIn.social({
         provider: "google",
-        options: { redirectTo }
+        callbackURL: new URL(next, window.location.origin).toString()
       });
-      if (oauthError) {
+      if (result.error) {
         setError("No pudimos abrir el inicio de sesión. Intenta de nuevo.");
         setLoading(false);
       }
-      // En caso de éxito el navegador redirige a Google automáticamente.
+      // Better Auth redirects the browser to Google after a successful request.
     } catch {
       setError("Error inesperado. Intenta de nuevo.");
       setLoading(false);

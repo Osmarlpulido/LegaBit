@@ -9,15 +9,16 @@ import {
   XAxis,
   YAxis
 } from "recharts";
-
-import type { CoinMarket } from "@/lib/coingecko";
+import type { MarketCoin } from "@legabit/api-contracts";
 
 type PriceChartProps = {
-  coin: CoinMarket;
+  coin: MarketCoin;
   currency: string;
 };
 
-function formatCurrency(value: number, currency: string): string {
+function formatCurrency(value: number | null, currency: string): string {
+  if (value === null) return "—";
+
   return new Intl.NumberFormat("es", {
     style: "currency",
     currency: currency.toUpperCase(),
@@ -43,8 +44,9 @@ export function PriceChart({ coin, currency }: PriceChartProps) {
     price
   }));
 
-  const isPositive = (coin.price_change_percentage_24h ?? 0) >= 0;
-  const strokeColor = isPositive ? "#C2A95D" : "#ef4444";
+  const change = coin.price_change_percentage_24h;
+  const isPositive = change !== null && change >= 0;
+  const strokeColor = change === null ? "#6b7280" : isPositive ? "#C2A95D" : "#ef4444";
   const fillId = `fill-${coin.id}`;
 
   return (
@@ -61,10 +63,9 @@ export function PriceChart({ coin, currency }: PriceChartProps) {
             {formatCurrency(coin.current_price, currency)}
           </p>
           <p
-            className={`text-xs tabular-nums font-medium ${isPositive ? "text-legabit-gold" : "text-red-500"}`}
+            className={`text-xs tabular-nums font-medium ${change === null ? "text-muted-foreground" : isPositive ? "text-legabit-gold" : "text-red-500"}`}
           >
-            {isPositive ? "+" : ""}
-            {coin.price_change_percentage_24h?.toFixed(2)}%
+            {change === null ? "—" : `${isPositive ? "+" : ""}${change.toFixed(2)}%`}
           </p>
         </div>
       </div>

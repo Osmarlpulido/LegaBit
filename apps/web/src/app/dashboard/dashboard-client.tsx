@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import type { MarketCurrency } from "@legabit/api-contracts";
+import { useMemo, useState } from "react";
 
 import { CryptoTable } from "@/components/dashboard/crypto-table";
 import { FilterBar } from "@/components/dashboard/filter-bar";
-import { useCryptoStore } from "@/store/crypto-store";
+import { fetchMarketData, shouldRetryMarketQuery } from "@/lib/market-api";
 
 type Tab = "all" | "defi" | "layer1" | "stablecoins";
 
@@ -33,17 +35,20 @@ function formatMarketCap(value: number): string {
 }
 
 export function DashboardClient() {
-  const { coins, global, loading, error, lastUpdated, fetchCoins, setCurrency, currency } =
-    useCryptoStore();
-
+  const [currency, setCurrency] = useState<MarketCurrency>("usd");
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<Tab>("all");
-
-  useEffect(() => {
-    void fetchCoins();
-    const interval = setInterval(() => void fetchCoins(), 60_000);
-    return () => clearInterval(interval);
-  }, [fetchCoins]);
+  const markets = useQuery({
+    queryKey: ["markets", { currency, page: 1, pageSize: 50 }],
+    queryFn: ({ signal }) => fetchMarketData({ currency, page: 1, pageSize: 50, signal }),
+    refetchInterval: 60_000,
+    retry: shouldRetryMarketQuery
+  });
+  const coins = useMemo(() => markets.data?.coins ?? [], [markets.data?.coins]);
+  const global = markets.data?.global ?? null;
+  const loading = markets.isFetching;
+  const error = markets.error instanceof Error ? markets.error.message : null;
+  const lastUpdated = markets.data?.fetchedAt ?? null;
 
   const filteredCoins = useMemo(() => {
     let list = coins;
@@ -122,7 +127,7 @@ export function DashboardClient() {
           onSearchChange={setSearch}
           currency={currency}
           onCurrencyChange={setCurrency}
-          onRefresh={() => void fetchCoins()}
+          onRefresh={() => void markets.refetch()}
           loading={loading}
           lastUpdated={lastUpdated}
         />

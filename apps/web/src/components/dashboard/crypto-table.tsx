@@ -1,17 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import type { MarketCoin } from "@legabit/api-contracts";
 
-import type { CoinMarket } from "@/lib/coingecko";
 import { PriceChart } from "@/components/dashboard/price-chart";
 
 type CryptoTableProps = {
-  coins: CoinMarket[];
+  coins: MarketCoin[];
   currency: string;
   loading: boolean;
 };
 
-function formatCurrency(value: number, currency: string): string {
+function formatCurrency(value: number | null, currency: string): string {
+  if (value === null) return "—";
+
   return new Intl.NumberFormat("es", {
     style: "currency",
     currency: currency.toUpperCase(),
@@ -21,7 +23,9 @@ function formatCurrency(value: number, currency: string): string {
   }).format(value);
 }
 
-function formatCompact(value: number): string {
+function formatCompact(value: number | null): string {
+  if (value === null) return "—";
+
   return new Intl.NumberFormat("es", {
     notation: "compact",
     maximumFractionDigits: 2
@@ -33,7 +37,7 @@ type SortKey = "market_cap_rank" | "current_price" | "price_change_percentage_24
 export function CryptoTable({ coins, currency, loading }: CryptoTableProps) {
   const [sortKey, setSortKey] = useState<SortKey>("market_cap_rank");
   const [sortAsc, setSortAsc] = useState(true);
-  const [selectedCoin, setSelectedCoin] = useState<CoinMarket | null>(null);
+  const [selectedCoin, setSelectedCoin] = useState<MarketCoin | null>(null);
 
   function handleSort(key: SortKey) {
     if (sortKey === key) {
@@ -45,8 +49,10 @@ export function CryptoTable({ coins, currency, loading }: CryptoTableProps) {
   }
 
   const sorted = [...coins].sort((a, b) => {
-    const av = a[sortKey] ?? 0;
-    const bv = b[sortKey] ?? 0;
+    const av = a[sortKey];
+    const bv = b[sortKey];
+    if (av === null) return 1;
+    if (bv === null) return -1;
     return sortAsc ? av - bv : bv - av;
   });
 
@@ -120,15 +126,15 @@ export function CryptoTable({ coins, currency, loading }: CryptoTableProps) {
           </thead>
           <tbody>
             {sorted.map((coin) => {
-              const change = coin.price_change_percentage_24h ?? 0;
-              const isPositive = change >= 0;
+              const change = coin.price_change_percentage_24h;
+              const isPositive = change !== null && change >= 0;
               return (
                 <tr
                   key={coin.id}
                   className="border-b border-border last:border-0 hover:bg-muted/20 transition-colors"
                 >
                   <td className="px-4 py-3 text-center tabular-nums text-muted-foreground text-xs">
-                    {coin.market_cap_rank}
+                    {coin.market_cap_rank ?? "—"}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2.5">
@@ -147,9 +153,8 @@ export function CryptoTable({ coins, currency, loading }: CryptoTableProps) {
                   <td className="px-4 py-3 text-right tabular-nums font-medium">
                     {formatCurrency(coin.current_price, currency)}
                   </td>
-                  <td className={`px-4 py-3 text-right tabular-nums font-medium text-sm ${isPositive ? "text-legabit-gold" : "text-red-500"}`}>
-                    {isPositive ? "+" : ""}
-                    {change.toFixed(2)}%
+                  <td className={`px-4 py-3 text-right tabular-nums font-medium text-sm ${change === null ? "text-muted-foreground" : isPositive ? "text-legabit-gold" : "text-red-500"}`}>
+                    {change === null ? "—" : `${isPositive ? "+" : ""}${change.toFixed(2)}%`}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums text-muted-foreground">
                     {formatCurrency(coin.market_cap, currency)}

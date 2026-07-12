@@ -1,0 +1,150 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  TURBO_TELEMETRY_DISABLED: "1"
+
+jobs:
+  openapi-contract:
+    name: OpenAPI contract drift
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --ignore-scripts
+
+      - name: Check committed OpenAPI artifact
+        run: yarn openapi:check
+
+      - name: Test compatibility checker
+        run: yarn workspace @legabit/backend openapi:compat:test
+
+      - name: Check backward compatibility
+        env:
+          OPENAPI_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: yarn openapi:compat --base-ref "$OPENAPI_BASE_REF"
+
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build contracts
+        run: yarn workspace @legabit/api-contracts build
+
+      - name: Start MongoDB 7
+        run: >-
+          docker run --detach --name legabit-ci-mongodb
+          --publish 127.0.0.1:27017:27017
+          mongo:7.0
+          mongod --replSet rs0 --bind_ip_all
+
+      - name: Initialize MongoDB replica set
+        run: |
+          for attempt in $(seq 1 30); do
+            if docker exec legabit-ci-mongodb mongosh --quiet --eval \
+              'quit(db.adminCommand({ ping: 1 }).ok === 1 ? 0 : 1)'; then
+              break
+            fi
+            sleep 1
+          done
+          docker exec legabit-ci-mongodb mongosh --quiet --eval '
+            try {
+              rs.status()
+            } catch (error) {
+              if (error.codeName === "NotYetInitialized") {
+                rs.initiate({ _id: "rs0", members: [{ _id: 0, host: "localhost:27017" }] })
+              } else {
+                throw error
+              }
+            }
+          '
+          for attempt in $(seq 1 30); do
+            if docker exec legabit-ci-mongodb mongosh --quiet --eval \
+              'quit(db.hello().isWritablePrimary ? 0 : 1)'; then
+              exit 0
+            fi
+            sleep 1
+          done
+          exit 1
+
+      - name: Lint backend
+        run: yarn workspace @legabit/backend lint
+
+      - name: Typecheck backend
+        run: yarn workspace @legabit/backend typecheck
+
+      - name: Test backend
+        env:
+          MONGODB_INTEGRATION_URI: mongodb://127.0.0.1:27017/?replicaSet=rs0
+        run: yarn workspace @legabit/backend test
+
+      - name: Build backend
+        run: yarn workspace @legabit/backend build
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --ignore-scripts
+
+      - name: Build contracts
+        run: yarn workspace @legabit/api-contracts build
+
+      - name: Lint frontend
+        run: yarn workspace web lint
+
+      - name: Verify frontend boundaries
+        run: yarn workspace web boundaries:check
+
+      - name: Test frontend
+        run: yarn workspace web test
+
+      - name: Typecheck frontend
+        run: yarn workspace web typecheck
+
+      - name: Build frontend
+        run: yarn workspace web build
