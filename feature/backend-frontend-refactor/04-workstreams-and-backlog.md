@@ -48,17 +48,29 @@ Acceptance: the empty service is production-deployable, observable, safely termi
 
 ## Epic D — market-data module
 
-Status: not started
+Status: in progress — provider-neutral contracts, validated use case, resilient CoinGecko adapter, safe errors, route tests, and frontend client cutover are delivered; cache/coalescing, production metrics, observation, and legacy removal remain
 
-- D1. Define provider-neutral market models.
-- D2. Implement validated query use case.
-- D3. Implement CoinGecko adapter with explicit timeout/retry policy.
+- D1. **Done:** Define provider-neutral market models.
+- D2. **Done:** Implement validated query use case.
+- D3. **Done:** Implement CoinGecko adapter with explicit timeout/retry policy.
 - D4. Implement cache, request coalescing, and stale policy.
 - D5. Add provider quota/error metrics and safe error mapping.
-- D6. Cut over the dashboard behind compatibility routing.
+- D6. **In progress:** The dashboard uses `/api/v1/markets`; production telemetry observation and rollback validation remain.
 - D7. Delete frontend-owned provider/server code after observation.
 
 Acceptance: provider changes do not affect the frontend contract; load does not exceed the agreed provider quota.
+
+### Independent review follow-up (2026-07-12)
+
+The initial market-data implementation is not production-ready until these review findings are resolved:
+
+- **High:** Add shared caching and request coalescing before production cutover. The dashboard polls every 60 seconds and the backend currently performs two CoinGecko calls per client request, regressing the shared caching behavior of the legacy Next.js route and risking provider-quota exhaustion.
+- **High:** Reconcile the market contract with legitimate nullable CoinGecko fields such as price, market cap, rank, percentage changes, volume, and circulating supply. Define explicit normalization/presentation behavior and add realistic payload tests so valid provider data cannot become an internal server error.
+- **Medium:** Runtime-validate successful provider responses inside the CoinGecko adapter and translate malformed or changed upstream payloads to the safe `SERVICE_UNAVAILABLE` envelope.
+- **Medium:** Prevent stale frontend requests from overwriting a newer currency selection by using cancellation, a request token, or an equivalent current-request guard.
+- Add tests for nullable and malformed provider payloads, provider-call coalescing/cache behavior, and out-of-order frontend responses.
+
+These items are part of D1, D4, D5, D6, and G2 completion and must be closed before the observation window begins.
 
 ## Epic E — newsletter module and data reconciliation
 

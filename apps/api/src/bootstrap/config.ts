@@ -17,7 +17,8 @@ const configSchema = z.object({
     .transform((value) => value.split(",").map((origin) => origin.trim()).filter(Boolean))
     .pipe(z.array(z.string().url()).min(1)),
   GOOGLE_CLIENT_ID: z.string().min(1).optional(),
-  GOOGLE_CLIENT_SECRET: z.string().min(1).optional()
+  GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),
+  COINGECKO_API_KEY: z.string().min(1).optional()
 }).superRefine((config, context) => {
   if (Boolean(config.GOOGLE_CLIENT_ID) !== Boolean(config.GOOGLE_CLIENT_SECRET)) {
     context.addIssue({

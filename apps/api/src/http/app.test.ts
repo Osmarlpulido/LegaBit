@@ -28,6 +28,7 @@ describe("health routes", () => {
     assert.ok(document.paths["/health/live"]);
     assert.ok(document.paths["/health/ready"]);
     assert.ok(document.paths["/api/v1/me"]);
+    assert.ok(document.paths["/api/v1/markets"]);
     await app.close();
   });
 

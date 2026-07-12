@@ -45,6 +45,327 @@
         }
       }
     },
+    "/api/v1/markets": {
+      "get": {
+        "operationId": "getMarkets",
+        "summary": "Get cryptocurrency market data",
+        "tags": [
+          "markets"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "usd",
+                "eur",
+                "btc"
+              ],
+              "default": "usd"
+            },
+            "in": "query",
+            "name": "currency",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000,
+              "default": 1
+            },
+            "in": "query",
+            "name": "page",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            },
+            "in": "query",
+            "name": "pageSize",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "coins": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "symbol": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "name": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "image": {
+                            "type": "string"
+                          },
+                          "current_price": {
+                            "type": "number"
+                          },
+                          "market_cap": {
+                            "type": "number"
+                          },
+                          "market_cap_rank": {
+                            "type": "integer",
+                            "minimum": 1
+                          },
+                          "price_change_percentage_24h": {
+                            "type": "number"
+                          },
+                          "price_change_percentage_7d_in_currency": {
+                            "type": "number"
+                          },
+                          "total_volume": {
+                            "type": "number"
+                          },
+                          "circulating_supply": {
+                            "type": "number"
+                          },
+                          "sparkline_in_7d": {
+                            "type": "object",
+                            "properties": {
+                              "price": {
+                                "type": "array",
+                                "items": {
+                                  "type": "number"
+                                }
+                              }
+                            },
+                            "required": [
+                              "price"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "last_updated": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "symbol",
+                          "name",
+                          "image",
+                          "current_price",
+                          "market_cap",
+                          "market_cap_rank",
+                          "price_change_percentage_24h",
+                          "total_volume",
+                          "circulating_supply",
+                          "last_updated"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "global": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "active_cryptocurrencies": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "markets": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "total_market_cap": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "number"
+                              }
+                            },
+                            "total_volume": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "number"
+                              }
+                            },
+                            "market_cap_percentage": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "number"
+                              }
+                            },
+                            "market_cap_change_percentage_24h_usd": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "active_cryptocurrencies",
+                            "markets",
+                            "total_market_cap",
+                            "total_volume",
+                            "market_cap_percentage",
+                            "market_cap_change_percentage_24h_usd"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "fetchedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "coins",
+                    "global",
+                    "fetchedAt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED",
+                        "FORBIDDEN",
+                        "NOT_FOUND",
+                        "VALIDATION_ERROR",
+                        "CONFLICT",
+                        "RATE_LIMITED",
+                        "SERVICE_UNAVAILABLE",
+                        "INTERNAL"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED",
+                        "FORBIDDEN",
+                        "NOT_FOUND",
+                        "VALIDATION_ERROR",
+                        "CONFLICT",
+                        "RATE_LIMITED",
+                        "SERVICE_UNAVAILABLE",
+                        "INTERNAL"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED",
+                        "FORBIDDEN",
+                        "NOT_FOUND",
+                        "VALIDATION_ERROR",
+                        "CONFLICT",
+                        "RATE_LIMITED",
+                        "SERVICE_UNAVAILABLE",
+                        "INTERNAL"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health/live": {
       "get": {
         "operationId": "getHealthLive",
@@ -285,6 +606,10 @@
     {
       "name": "identity",
       "description": "Authenticated actor information"
+    },
+    {
+      "name": "markets",
+      "description": "Public cryptocurrency market data"
     }
   ]
 }

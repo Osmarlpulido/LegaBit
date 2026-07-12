@@ -1,16 +1,18 @@
 "use client";
 
+import type { MarketCurrency } from "@legabit/api-contracts";
+
 type FilterBarProps = {
   search: string;
   onSearchChange: (value: string) => void;
-  currency: string;
-  onCurrencyChange: (value: string) => void;
+  currency: MarketCurrency;
+  onCurrencyChange: (value: MarketCurrency) => void;
   onRefresh: () => void;
   loading: boolean;
   lastUpdated: string | null;
 };
 
-const CURRENCIES = [
+const CURRENCIES: { value: MarketCurrency; label: string }[] = [
   { value: "usd", label: "USD $" },
   { value: "eur", label: "EUR €" },
   { value: "btc", label: "BTC ₿" }

@@ -1,12 +1,8 @@
 import { create } from "zustand";
+import type { MarketCurrency } from "@legabit/api-contracts";
 
 import type { CoinMarket, GlobalData } from "@/lib/coingecko";
-
-type ApiResponse = {
-  coins: CoinMarket[];
-  global: GlobalData;
-  fetchedAt: string;
-};
+import { fetchMarketData } from "@/lib/market-api";
 
 type CryptoState = {
   coins: CoinMarket[];
@@ -14,10 +10,10 @@ type CryptoState = {
   loading: boolean;
   error: string | null;
   lastUpdated: string | null;
-  currency: string;
+  currency: MarketCurrency;
 
-  fetchCoins: (currency?: string, perPage?: number) => Promise<void>;
-  setCurrency: (currency: string) => void;
+  fetchCoins: (currency?: MarketCurrency, perPage?: number) => Promise<void>;
+  setCurrency: (currency: MarketCurrency) => void;
 };
 
 export const useCryptoStore = create<CryptoState>((set, get) => ({
@@ -28,28 +24,20 @@ export const useCryptoStore = create<CryptoState>((set, get) => ({
   lastUpdated: null,
   currency: "usd",
 
-  setCurrency: (currency: string) => {
+  setCurrency: (currency: MarketCurrency) => {
     set({ currency });
     void get().fetchCoins(currency);
   },
 
-  fetchCoins: async (currency?: string, perPage = 50) => {
+  fetchCoins: async (currency?: MarketCurrency, perPage = 50) => {
     const activeCurrency = currency ?? get().currency;
     set({ loading: true, error: null });
 
     try {
-      const params = new URLSearchParams({
-        vs_currency: activeCurrency,
-        per_page: String(perPage)
+      const data = await fetchMarketData({
+        currency: activeCurrency,
+        pageSize: perPage
       });
-      const res = await fetch(`/api/crypto?${params.toString()}`);
-
-      if (!res.ok) {
-        const body = (await res.json()) as { error?: string };
-        throw new Error(body.error ?? `HTTP ${res.status}`);
-      }
-
-      const data = (await res.json()) as ApiResponse;
       set({
         coins: data.coins,
         global: data.global,

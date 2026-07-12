@@ -1,8 +1,11 @@
 import {
   apiErrorSchema,
+  AppError,
   currentUserResponseSchema,
   healthLiveResponseSchema,
   healthReadyResponseSchema,
+  marketsQuerySchema,
+  marketsResponseSchema,
   toOpenApiSchema
 } from "@legabit/api-contracts";
 import cors from "@fastify/cors";
@@ -11,6 +14,8 @@ import Fastify, { type FastifyInstance } from "fastify";
 
 import type { DatabaseHealth } from "../infrastructure/mongodb.js";
 import type { AuthService } from "../modules/identity/auth.js";
+import { CoinGeckoMarketDataProvider } from "../infrastructure/coingecko.js";
+import { GetMarkets } from "../modules/markets/markets.js";
 import { registerAuthRoutes, toAuthHeaders } from "./auth-handler.js";
 
 type AppOptions = {
@@ -18,9 +23,11 @@ type AppOptions = {
   auth: AuthService;
   trustedOrigins?: string[];
   logger?: boolean | { level: string };
+  markets?: GetMarkets;
 };
 
 export function createApp(options: AppOptions): FastifyInstance {
+  const markets = options.markets ?? new GetMarkets(new CoinGeckoMarketDataProvider());
   const app = Fastify({
     logger: options.logger ?? true,
     requestIdHeader: "x-request-id"
@@ -42,13 +49,40 @@ export function createApp(options: AppOptions): FastifyInstance {
       },
       tags: [
         { name: "health", description: "Service liveness and readiness" },
-        { name: "identity", description: "Authenticated actor information" }
+        { name: "identity", description: "Authenticated actor information" },
+        { name: "markets", description: "Public cryptocurrency market data" }
       ]
     }
   });
 
   app.after(() => {
     registerAuthRoutes(app, options.auth);
+
+    app.get("/api/v1/markets", {
+      schema: {
+        operationId: "getMarkets",
+        summary: "Get cryptocurrency market data",
+        tags: ["markets"],
+        querystring: toOpenApiSchema(marketsQuerySchema),
+        response: {
+          200: toOpenApiSchema(marketsResponseSchema),
+          422: toOpenApiSchema(apiErrorSchema),
+          429: toOpenApiSchema(apiErrorSchema),
+          503: toOpenApiSchema(apiErrorSchema)
+        }
+      }
+    }, async (request, reply) => {
+      const parsed = marketsQuerySchema.safeParse(request.query);
+      if (!parsed.success) {
+        const body = apiErrorSchema.parse({
+          code: "VALIDATION_ERROR",
+          message: "Invalid market query.",
+          requestId: request.id
+        });
+        return reply.status(422).send(body);
+      }
+      return marketsResponseSchema.parse(await markets.execute(parsed.data));
+    });
 
     app.get("/health/live", {
       schema: {
@@ -129,6 +163,24 @@ export function createApp(options: AppOptions): FastifyInstance {
   });
 
   app.setErrorHandler((error, request, reply) => {
+    if (typeof error === "object" && error !== null && "validation" in error) {
+      const body = apiErrorSchema.parse({
+        code: "VALIDATION_ERROR",
+        message: "Invalid request.",
+        requestId: request.id
+      });
+      return reply.status(422).send(body);
+    }
+    if (error instanceof AppError) {
+      request.log.warn({ err: error, code: error.code }, "Request failed");
+      const body = apiErrorSchema.parse({
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        requestId: request.id
+      });
+      return reply.status(error.status).send(body);
+    }
     request.log.error({ err: error }, "Unhandled request error");
     const body = apiErrorSchema.parse({
       code: "INTERNAL",

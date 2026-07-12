@@ -1,7 +1,9 @@
 import { loadConfig } from "./bootstrap/config.js";
 import { createApp } from "./http/app.js";
 import { MongoDatabase } from "./infrastructure/mongodb.js";
+import { CoinGeckoMarketDataProvider } from "./infrastructure/coingecko.js";
 import { createAuthService } from "./modules/identity/auth.js";
+import { GetMarkets } from "./modules/markets/markets.js";
 
 const config = loadConfig();
 const database = new MongoDatabase(config.MONGODB_URI, config.MONGODB_DATABASE);
@@ -9,6 +11,7 @@ const auth = createAuthService(config, database);
 const app = createApp({
   auth,
   database,
+  markets: new GetMarkets(new CoinGeckoMarketDataProvider({ apiKey: config.COINGECKO_API_KEY })),
   logger: { level: config.LOG_LEVEL },
   trustedOrigins: config.AUTH_TRUSTED_ORIGINS
 });
