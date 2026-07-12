@@ -9,7 +9,7 @@ Last reviewed: 2026-07-12
 |---|---|---|
 | Phase 0 — decisions and baseline | In progress | Architecture inventory, self-hosted identity direction, and roadmap are complete; topology, MongoDB hosting/modeling, consent, and live-data baseline decisions remain open |
 | Phase 1 — backend foundation | In progress | API workspace, contracts rename, config validation, MongoDB connection lifecycle, health/auth/current-user routes, structured errors, CORS, logging, shutdown, initial tests, and reproducible OpenAPI generation are implemented; deployment, production routing, compatibility comparison, and full CI remain |
-| Phase 2 — market data | In progress | Versioned contracts, backend route/provider resilience and validation, caching/coalescing, nullable-field handling, stale-response protection, tests, and frontend client cutover are implemented; production telemetry observation and legacy removal remain |
+| Phase 2 — market data | In progress | Versioned contracts, backend route/provider resilience and validation, caching/coalescing, bounded telemetry, nullable-field handling, stale-response protection, tests, and frontend client cutover are implemented; production telemetry observation and legacy removal remain |
 | Phase 3 — MongoDB/newsletter migration | Not started | No datastore or route cutover has occurred |
 | Phase 4 — identity and authorization | In progress | Better Auth backend, same-origin routing, frontend client, login/session/sign-out migration, and Supabase auth-code removal are implemented; live Google/MongoDB integration, account policy, tenancy, and authorization remain |
 | Phase 5 — frontend cleanup | In progress | Auth is routed through the backend; newsletter, crypto, and diagnostic routes remain in Next.js |

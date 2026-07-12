@@ -1,6 +1,7 @@
 import type { MarketsQuery, MarketsResponse } from "@legabit/api-contracts";
 
 import type { MarketDataProvider } from "../modules/markets/markets.js";
+import { marketTelemetry, type MarketTelemetry } from "./market-telemetry.js";
 
 type MarketData = Omit<MarketsResponse, "fetchedAt">;
 
@@ -14,6 +15,7 @@ export type CachedMarketDataProviderOptions = {
   ttlMs?: number;
   staleIfErrorMs?: number;
   now?: () => number;
+  telemetry?: MarketTelemetry;
 };
 
 /**
@@ -27,6 +29,7 @@ export class CachedMarketDataProvider implements MarketDataProvider {
   private readonly ttlMs: number;
   private readonly staleIfErrorMs: number;
   private readonly now: () => number;
+  private readonly telemetry: MarketTelemetry;
 
   constructor(
     private readonly provider: MarketDataProvider,
@@ -35,15 +38,24 @@ export class CachedMarketDataProvider implements MarketDataProvider {
     this.ttlMs = options.ttlMs ?? 60_000;
     this.staleIfErrorMs = options.staleIfErrorMs ?? 5 * 60_000;
     this.now = options.now ?? Date.now;
+    this.telemetry = options.telemetry ?? marketTelemetry;
   }
 
   async getMarkets(query: MarketsQuery): Promise<MarketData> {
     const key = this.key(query);
     const cached = this.entries.get(key);
-    if (cached && this.now() < cached.expiresAt) return cached.data;
+    if (cached && this.now() < cached.expiresAt) {
+      this.telemetry.cacheRequest("hit");
+      return cached.data;
+    }
 
     const pending = this.inFlight.get(key);
-    if (pending) return pending;
+    if (pending) {
+      this.telemetry.cacheRequest("coalesced");
+      return pending;
+    }
+
+    this.telemetry.cacheRequest("miss");
 
     const load = this.load(key, query, cached);
     this.inFlight.set(key, load);
@@ -65,7 +77,10 @@ export class CachedMarketDataProvider implements MarketDataProvider {
       });
       return data;
     } catch (error) {
-      if (cached && this.now() < cached.staleUntil) return cached.data;
+      if (cached && this.now() < cached.staleUntil) {
+        this.telemetry.cacheRequest("stale");
+        return cached.data;
+      }
       this.entries.delete(key);
       throw error;
     }

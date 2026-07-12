@@ -4,6 +4,7 @@ import { describe, it } from "node:test";
 import { AppError } from "@legabit/api-contracts";
 
 import { CoinGeckoMarketDataProvider } from "./coingecko.js";
+import type { MarketProviderOutcome, MarketTelemetry } from "./market-telemetry.js";
 
 const coin = {
   id: "bitcoin", symbol: "btc", name: "Bitcoin", image: "https://example.test/btc.png",
@@ -85,6 +86,13 @@ describe("CoinGeckoMarketDataProvider", () => {
 
   it("retries a bounded number of safe transient failures", async () => {
     let calls = 0;
+    const requests: Array<{ endpoint: string; outcome: MarketProviderOutcome }> = [];
+    const retries: string[] = [];
+    const telemetry: MarketTelemetry = {
+      providerRequest: (endpoint, outcome) => requests.push({ endpoint, outcome }),
+      providerRetry: (endpoint, reason) => retries.push(`${endpoint}:${reason}`),
+      cacheRequest: () => undefined
+    };
     const provider = new CoinGeckoMarketDataProvider({
       fetch: async (input) => {
         if (String(input).includes("/global")) return Response.json(global);
@@ -92,10 +100,14 @@ describe("CoinGeckoMarketDataProvider", () => {
         return calls < 3 ? new Response(null, { status: 503 }) : Response.json([coin]);
       },
       maxRetries: 2,
-      retryDelayMs: () => 0
+      retryDelayMs: () => 0,
+      telemetry
     });
     await provider.getMarkets({ currency: "usd", page: 1, pageSize: 50 });
     assert.equal(calls, 3);
+    assert.deepEqual(retries, ["coins:upstream_error", "coins:upstream_error"]);
+    assert.equal(requests.filter(({ endpoint }) => endpoint === "coins").length, 3);
+    assert.equal(requests.filter(({ outcome }) => outcome === "success").length, 2);
   });
 
   it("translates exhausted throttling without leaking provider details", async () => {
@@ -111,16 +123,23 @@ describe("CoinGeckoMarketDataProvider", () => {
   });
 
   it("aborts timed-out requests and translates them to service unavailable", async () => {
+    const outcomes: MarketProviderOutcome[] = [];
     const provider = new CoinGeckoMarketDataProvider({
       fetch: (_input, init) => new Promise((_resolve, reject) => {
         init?.signal?.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError")));
       }),
       timeoutMs: 5,
-      maxRetries: 0
+      maxRetries: 0,
+      telemetry: {
+        providerRequest: (_endpoint, outcome) => outcomes.push(outcome),
+        providerRetry: () => undefined,
+        cacheRequest: () => undefined
+      }
     });
     await assert.rejects(
       provider.getMarkets({ currency: "usd", page: 1, pageSize: 50 }),
       (error: unknown) => error instanceof AppError && error.code === "SERVICE_UNAVAILABLE"
     );
+    assert.ok(outcomes.every((outcome) => outcome === "timeout"));
   });
 });

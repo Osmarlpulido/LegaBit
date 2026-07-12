@@ -4,6 +4,7 @@ import { describe, it } from "node:test";
 import { AppError } from "@legabit/api-contracts";
 
 import { CachedMarketDataProvider } from "./market-cache.js";
+import type { MarketCacheOutcome, MarketTelemetry } from "./market-telemetry.js";
 
 const query = { currency: "usd" as const, page: 1, pageSize: 50 };
 const first = {
@@ -12,6 +13,36 @@ const first = {
 };
 
 describe("CachedMarketDataProvider", () => {
+  it("records bounded cache outcomes without query values", async () => {
+    const outcomes: MarketCacheOutcome[] = [];
+    const telemetry: MarketTelemetry = {
+      providerRequest: () => undefined,
+      providerRetry: () => undefined,
+      cacheRequest: (outcome) => outcomes.push(outcome)
+    };
+    let now = 0;
+    let fail = false;
+    let release!: (value: typeof first) => void;
+    const pending = new Promise<typeof first>((resolve) => { release = resolve; });
+    const cache = new CachedMarketDataProvider({
+      getMarkets: async () => {
+        if (fail) throw new AppError("SERVICE_UNAVAILABLE", "unavailable");
+        return pending;
+      }
+    }, { ttlMs: 100, staleIfErrorMs: 200, now: () => now, telemetry });
+
+    const initial = cache.getMarkets(query);
+    const shared = cache.getMarkets(query);
+    release(first);
+    await Promise.all([initial, shared]);
+    await cache.getMarkets(query);
+    now = 100;
+    fail = true;
+    await cache.getMarkets(query);
+
+    assert.deepEqual(outcomes, ["miss", "coalesced", "hit", "miss", "stale"]);
+  });
+
   it("shares a fresh result for identical queries but isolates different query keys", async () => {
     let calls = 0;
     const cache = new CachedMarketDataProvider({ getMarkets: async () => { calls += 1; return first; } });

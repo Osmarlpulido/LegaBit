@@ -48,13 +48,13 @@ Acceptance: the empty service is production-deployable, observable, safely termi
 
 ## Epic D — market-data module
 
-Status: in progress — provider-neutral contracts, validated use case, resilient runtime-validated CoinGecko adapter, safe errors, process-wide cache/coalescing with stale fallback, nullable-field handling, stale frontend response protection, route/provider tests, and frontend client cutover are delivered; production metrics, observation, and legacy removal remain
+Status: in progress — provider-neutral contracts, validated use case, resilient runtime-validated CoinGecko adapter, safe errors, process-wide cache/coalescing with stale fallback, bounded provider/cache metrics, nullable-field handling, stale frontend response protection, route/provider tests, and frontend client cutover are delivered; production observation and legacy removal remain
 
 - D1. **Done:** Define provider-neutral market models.
 - D2. **Done:** Implement validated query use case.
 - D3. **Done:** Implement CoinGecko adapter with explicit timeout/retry policy.
 - D4. **Done for the current single-process topology:** Implement process-wide cache, request coalescing, and stale-on-provider-error policy. Reassess external shared caching before horizontal scaling.
-- D5. Add provider quota/error metrics and safe error mapping.
+- D5. **Done:** Add bounded provider request/retry/duration and cache outcome metrics plus safe error mapping.
 - D6. **In progress:** The dashboard uses `/api/v1/markets`; production telemetry observation and rollback validation remain.
 - D7. Delete frontend-owned provider/server code after observation.
 

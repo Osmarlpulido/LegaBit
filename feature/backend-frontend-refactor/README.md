@@ -12,7 +12,7 @@ Last reviewed: 2026-07-12
 | Target architecture | Accepted for incremental implementation | Modular API boundary, MongoDB direction, and contract ownership are defined |
 | API foundation | In progress | `apps/api`, configuration validation, MongoDB connection management, health endpoints, auth handler, current-user endpoint, errors, logging, shutdown, tests, and reproducible OpenAPI generation are implemented |
 | Shared API contracts | In progress | `packages/api` is renamed to `packages/api-contracts`; health, error, and current-user contracts drive route schemas and the committed OpenAPI artifact; product contracts remain |
-| Market-data extraction | In progress | Contracts, `/api/v1/markets`, resilient validated CoinGecko access, process-wide caching/coalescing, nullable-field handling, tests, and dashboard client cutover are implemented; the legacy route remains for rollback pending production observation |
+| Market-data extraction | In progress | Contracts, `/api/v1/markets`, resilient validated CoinGecko access, process-wide caching/coalescing, bounded provider/cache telemetry, nullable-field handling, tests, and dashboard client cutover are implemented; the legacy route remains for rollback pending production observation |
 | MongoDB provisioning and data migration | Not started | No production database, collections, indexes, validators, or data have been changed |
 | Newsletter extraction | Not started | Existing Next.js route and persistence paths remain active |
 | Identity and authorization boundary | In progress | Better Auth backend and frontend login/session/sign-out surfaces are implemented; live Google/MongoDB validation, account policy, tenancy, and authorization remain |
