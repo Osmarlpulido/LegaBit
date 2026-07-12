@@ -1,4 +1,12 @@
-import { AppError, type MarketCoin, type MarketGlobalData, type MarketsQuery } from "@legabit/api-contracts";
+import {
+  AppError,
+  marketCoinSchema,
+  marketGlobalDataSchema,
+  type MarketCoin,
+  type MarketGlobalData,
+  type MarketsQuery
+} from "@legabit/api-contracts";
+import type { z } from "zod";
 
 import type { MarketDataProvider } from "../modules/markets/markets.js";
 
@@ -6,9 +14,6 @@ const DEFAULT_BASE_URL = "https://api.coingecko.com/api/v3";
 const RETRYABLE_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
 
 type Fetch = typeof fetch;
-
-type CoinGeckoCoin = MarketCoin;
-type CoinGeckoGlobal = MarketGlobalData;
 
 export type CoinGeckoOptions = {
   apiKey?: string;
@@ -48,13 +53,13 @@ export class CoinGeckoMarketDataProvider implements MarketDataProvider {
     }).toString();
 
     const [coins, global] = await Promise.all([
-      this.request<CoinGeckoCoin[]>(markets),
-      this.request<CoinGeckoGlobal>(new URL("/global", this.baseUrl))
+      this.request(markets, marketCoinSchema.array()),
+      this.request(new URL("/global", this.baseUrl), marketGlobalDataSchema)
     ]);
     return { coins, global };
   }
 
-  private async request<T>(url: URL): Promise<T> {
+  private async request<T>(url: URL, schema: z.ZodType<T>): Promise<T> {
     for (let attempt = 0; ; attempt += 1) {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
@@ -63,7 +68,13 @@ export class CoinGeckoMarketDataProvider implements MarketDataProvider {
           headers: this.apiKey ? { "x-cg-demo-api-key": this.apiKey } : undefined,
           signal: controller.signal
         });
-        if (response.ok) return await response.json() as T;
+        if (response.ok) {
+          const parsed = schema.safeParse(await response.json());
+          if (!parsed.success) {
+            throw new AppError("SERVICE_UNAVAILABLE", "Market data is temporarily unavailable.");
+          }
+          return parsed.data;
+        }
 
         if (RETRYABLE_STATUSES.has(response.status) && attempt < this.maxRetries) {
           await this.delay(attempt);

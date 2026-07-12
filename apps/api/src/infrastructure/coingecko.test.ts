@@ -37,6 +37,52 @@ describe("CoinGeckoMarketDataProvider", () => {
     assert.match(urls.find((url) => url.includes("/coins/markets")) ?? "", /per_page=25/);
   });
 
+  it("accepts legitimate nullable market values", async () => {
+    const nullableCoin = {
+      ...coin,
+      current_price: null,
+      market_cap: null,
+      market_cap_rank: null,
+      price_change_percentage_24h: null,
+      price_change_percentage_7d_in_currency: null,
+      total_volume: null,
+      circulating_supply: null
+    };
+    const provider = new CoinGeckoMarketDataProvider({
+      fetch: async (input) => Response.json(String(input).includes("/global") ? global : [nullableCoin]),
+      maxRetries: 0
+    });
+
+    const result = await provider.getMarkets({ currency: "usd", page: 1, pageSize: 50 });
+    assert.deepEqual(result.coins, [nullableCoin]);
+  });
+
+  it("translates malformed successful provider payloads to service unavailable", async () => {
+    const provider = new CoinGeckoMarketDataProvider({
+      fetch: async (input) => Response.json(String(input).includes("/global") ? global : [{ ...coin, current_price: "10" }]),
+      maxRetries: 0
+    });
+
+    await assert.rejects(
+      provider.getMarkets({ currency: "usd", page: 1, pageSize: 50 }),
+      (error: unknown) => error instanceof AppError && error.code === "SERVICE_UNAVAILABLE"
+    );
+  });
+
+  it("validates the successful global payload at runtime", async () => {
+    const provider = new CoinGeckoMarketDataProvider({
+      fetch: async (input) => Response.json(String(input).includes("/global")
+        ? { data: { ...global.data, total_volume: "invalid" } }
+        : [coin]),
+      maxRetries: 0
+    });
+
+    await assert.rejects(
+      provider.getMarkets({ currency: "usd", page: 1, pageSize: 50 }),
+      (error: unknown) => error instanceof AppError && error.code === "SERVICE_UNAVAILABLE"
+    );
+  });
+
   it("retries a bounded number of safe transient failures", async () => {
     let calls = 0;
     const provider = new CoinGeckoMarketDataProvider({

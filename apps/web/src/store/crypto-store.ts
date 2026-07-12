@@ -1,12 +1,15 @@
 import { create } from "zustand";
-import type { MarketCurrency } from "@legabit/api-contracts";
+import type {
+  MarketCoin,
+  MarketCurrency,
+  MarketGlobalData
+} from "@legabit/api-contracts";
 
-import type { CoinMarket, GlobalData } from "@/lib/coingecko";
 import { fetchMarketData } from "@/lib/market-api";
 
 type CryptoState = {
-  coins: CoinMarket[];
-  global: GlobalData | null;
+  coins: MarketCoin[];
+  global: MarketGlobalData | null;
   loading: boolean;
   error: string | null;
   lastUpdated: string | null;
@@ -15,6 +18,8 @@ type CryptoState = {
   fetchCoins: (currency?: MarketCurrency, perPage?: number) => Promise<void>;
   setCurrency: (currency: MarketCurrency) => void;
 };
+
+let latestRequestId = 0;
 
 export const useCryptoStore = create<CryptoState>((set, get) => ({
   coins: [],
@@ -30,6 +35,7 @@ export const useCryptoStore = create<CryptoState>((set, get) => ({
   },
 
   fetchCoins: async (currency?: MarketCurrency, perPage = 50) => {
+    const requestId = ++latestRequestId;
     const activeCurrency = currency ?? get().currency;
     set({ loading: true, error: null });
 
@@ -38,6 +44,11 @@ export const useCryptoStore = create<CryptoState>((set, get) => ({
         currency: activeCurrency,
         pageSize: perPage
       });
+
+      if (requestId !== latestRequestId) {
+        return;
+      }
+
       set({
         coins: data.coins,
         global: data.global,
@@ -46,6 +57,10 @@ export const useCryptoStore = create<CryptoState>((set, get) => ({
         currency: activeCurrency
       });
     } catch (err) {
+      if (requestId !== latestRequestId) {
+        return;
+      }
+
       set({
         loading: false,
         error: err instanceof Error ? err.message : "Error al obtener datos"

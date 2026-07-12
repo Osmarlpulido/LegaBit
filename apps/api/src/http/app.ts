@@ -15,6 +15,7 @@ import Fastify, { type FastifyInstance } from "fastify";
 import type { DatabaseHealth } from "../infrastructure/mongodb.js";
 import type { AuthService } from "../modules/identity/auth.js";
 import { CoinGeckoMarketDataProvider } from "../infrastructure/coingecko.js";
+import { CachedMarketDataProvider } from "../infrastructure/market-cache.js";
 import { GetMarkets } from "../modules/markets/markets.js";
 import { registerAuthRoutes, toAuthHeaders } from "./auth-handler.js";
 
@@ -27,7 +28,7 @@ type AppOptions = {
 };
 
 export function createApp(options: AppOptions): FastifyInstance {
-  const markets = options.markets ?? new GetMarkets(new CoinGeckoMarketDataProvider());
+  const markets = options.markets ?? new GetMarkets(new CachedMarketDataProvider(new CoinGeckoMarketDataProvider()));
   const app = Fastify({
     logger: options.logger ?? true,
     requestIdHeader: "x-request-id"

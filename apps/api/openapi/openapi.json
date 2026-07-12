@@ -119,26 +119,33 @@
                             "type": "string"
                           },
                           "current_price": {
-                            "type": "number"
+                            "type": "number",
+                            "nullable": true
                           },
                           "market_cap": {
-                            "type": "number"
+                            "type": "number",
+                            "nullable": true
                           },
                           "market_cap_rank": {
                             "type": "integer",
-                            "minimum": 1
+                            "minimum": 1,
+                            "nullable": true
                           },
                           "price_change_percentage_24h": {
-                            "type": "number"
+                            "type": "number",
+                            "nullable": true
                           },
                           "price_change_percentage_7d_in_currency": {
-                            "type": "number"
+                            "type": "number",
+                            "nullable": true
                           },
                           "total_volume": {
-                            "type": "number"
+                            "type": "number",
+                            "nullable": true
                           },
                           "circulating_supply": {
-                            "type": "number"
+                            "type": "number",
+                            "nullable": true
                           },
                           "sparkline_in_7d": {
                             "type": "object",

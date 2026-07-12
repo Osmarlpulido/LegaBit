@@ -48,12 +48,12 @@ Acceptance: the empty service is production-deployable, observable, safely termi
 
 ## Epic D — market-data module
 
-Status: in progress — provider-neutral contracts, validated use case, resilient CoinGecko adapter, safe errors, route tests, and frontend client cutover are delivered; cache/coalescing, production metrics, observation, and legacy removal remain
+Status: in progress — provider-neutral contracts, validated use case, resilient runtime-validated CoinGecko adapter, safe errors, process-wide cache/coalescing with stale fallback, nullable-field handling, stale frontend response protection, route/provider tests, and frontend client cutover are delivered; production metrics, observation, and legacy removal remain
 
 - D1. **Done:** Define provider-neutral market models.
 - D2. **Done:** Implement validated query use case.
 - D3. **Done:** Implement CoinGecko adapter with explicit timeout/retry policy.
-- D4. Implement cache, request coalescing, and stale policy.
+- D4. **Done for the current single-process topology:** Implement process-wide cache, request coalescing, and stale-on-provider-error policy. Reassess external shared caching before horizontal scaling.
 - D5. Add provider quota/error metrics and safe error mapping.
 - D6. **In progress:** The dashboard uses `/api/v1/markets`; production telemetry observation and rollback validation remain.
 - D7. Delete frontend-owned provider/server code after observation.
@@ -71,6 +71,8 @@ The initial market-data implementation is not production-ready until these revie
 - Add tests for nullable and malformed provider payloads, provider-call coalescing/cache behavior, and out-of-order frontend responses.
 
 These items are part of D1, D4, D5, D6, and G2 completion and must be closed before the observation window begins.
+
+Resolution (2026-07-12): all implementation and test findings above are closed. The observation window can begin once production telemetry and rollback validation are available.
 
 ## Epic E — newsletter module and data reconciliation
 
