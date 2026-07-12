@@ -6,7 +6,7 @@ const monorepoRoot = path.resolve(process.cwd(), "..");
 loadEnvConfig(monorepoRoot);
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@legabit/ui", "@legabit/api"],
+  transpilePackages: ["@legabit/ui", "@legabit/api-contracts"],
   webpack(config) {
     // @walletconnect/modal-ui arrastra motion/@motionone/dom con archivos rotos.
     // Sustituimos esos paquetes con módulos vacíos para que el build no falle.

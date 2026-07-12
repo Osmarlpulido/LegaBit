@@ -1,19 +1,12 @@
 import { z } from "zod";
 
 export const newsletterSubscribeInputSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .email("Correo no válido")
-    .max(320),
-  displayName: z
-    .union([z.string(), z.null()])
-    .transform((v) => {
-      if (v == null) return undefined;
-      const t = v.trim();
-      return t.length === 0 ? undefined : t.slice(0, 120);
-    }),
+  email: z.string().trim().toLowerCase().email("Correo no válido").max(320),
+  displayName: z.union([z.string(), z.null()]).transform((value) => {
+    if (value == null) return undefined;
+    const trimmed = value.trim();
+    return trimmed.length === 0 ? undefined : trimmed.slice(0, 120);
+  }),
   phone: z
     .string()
     .trim()

@@ -1,4 +1,4 @@
-import { newsletterSubscribeInputSchema } from "@legabit/api";
+import { newsletterSubscribeInputSchema } from "@legabit/api-contracts";
 import { Prisma, prisma } from "@legabit/db";
 
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";

@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@legabit/api": "*",
+    "@legabit/api-contracts": "*",
     "@legabit/db": "*",
     "@legabit/ui": "*",
     "@supabase/ssr": "^0.10.3",

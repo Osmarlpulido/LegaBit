@@ -1,7 +1,9 @@
 {
   "extends": "../config/typescript/tsconfig.base.json",
   "compilerOptions": {
-    "moduleResolution": "bundler",
+    "incremental": false,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "rootDir": "src",
     "noEmit": true
   },

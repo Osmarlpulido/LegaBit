@@ -8,8 +8,5 @@ export const paginationQuerySchema = z.object({
 export type PaginationQuery = z.infer<typeof paginationQuerySchema>;
 
 export function createPageSchema<T extends z.ZodTypeAny>(itemSchema: T) {
-  return z.object({
-    items: z.array(itemSchema),
-    nextCursor: z.string().nullable()
-  });
+  return z.object({ items: z.array(itemSchema), nextCursor: z.string().nullable() });
 }

@@ -7,6 +7,7 @@ export const errorCodes = [
   "VALIDATION_ERROR",
   "CONFLICT",
   "RATE_LIMITED",
+  "SERVICE_UNAVAILABLE",
   "INTERNAL"
 ] as const;
 
@@ -15,7 +16,8 @@ export type ErrorCode = (typeof errorCodes)[number];
 export const apiErrorSchema = z.object({
   code: z.enum(errorCodes),
   message: z.string(),
-  details: z.record(z.unknown()).optional()
+  details: z.record(z.unknown()).optional(),
+  requestId: z.string().optional()
 });
 
 export type ApiError = z.infer<typeof apiErrorSchema>;
@@ -36,19 +38,13 @@ export class AppError extends Error {
 
 function statusForCode(code: ErrorCode): number {
   switch (code) {
-    case "UNAUTHORIZED":
-      return 401;
-    case "FORBIDDEN":
-      return 403;
-    case "NOT_FOUND":
-      return 404;
-    case "VALIDATION_ERROR":
-      return 422;
-    case "CONFLICT":
-      return 409;
-    case "RATE_LIMITED":
-      return 429;
-    default:
-      return 500;
+    case "UNAUTHORIZED": return 401;
+    case "FORBIDDEN": return 403;
+    case "NOT_FOUND": return 404;
+    case "VALIDATION_ERROR": return 422;
+    case "CONFLICT": return 409;
+    case "RATE_LIMITED": return 429;
+    case "SERVICE_UNAVAILABLE": return 503;
+    default: return 500;
   }
 }
