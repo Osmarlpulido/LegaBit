@@ -79,7 +79,11 @@ docker compose ps -a
 `mongodb` should report `healthy` and `mongodb-init` should report an exit code of
 `0`. Initialization is safe to run again. MongoDB is bound only to
 `127.0.0.1:27017` and this local setup intentionally has no credentials; do not
-use it as a hosted-environment configuration.
+use it as a hosted-environment configuration. The replica-set member advertises
+`localhost:27017`, so this Compose profile is intentionally **host-client only**:
+run the API, migrations, and integration tests on the host. Applications in
+other containers need a separately configured replica set whose advertised
+hostname is resolvable from their Docker network.
 
 Apply the backend's idempotent MongoDB migrations before starting the API:
 
@@ -149,6 +153,15 @@ Open `http://localhost:3000`.
 
 The frontend calls the versioned backend routes through same-origin `/api/v1/*` rewrites, so the backend must be running for dashboard and newsletter features.
 
+To exercise the actual newsletter form in headless Chrome and verify its consent evidence directly in MongoDB, run this while both applications and MongoDB are available:
+
+```bash
+MONGODB_INTEGRATION_URI='mongodb://localhost:27017/?replicaSet=rs0' \
+yarn workspace web journey:newsletter
+```
+
+The journey fills and submits the rendered form, checks its loading and success UI, reads the generated subscriber from MongoDB, validates consent and timestamps, then removes the test subscriber. Set `CHROME_PATH`, `JOURNEY_BASE_URL`, or `JOURNEY_MONGODB_DATABASE` when the local defaults do not apply.
+
 ## Start both applications
 
 Use two terminals during the migration.
@@ -187,13 +200,6 @@ yarn workspace @legabit/backend test
 ```bash
 yarn workspace web typecheck
 yarn workspace web build
-```
-
-With MongoDB, the migrated API, and the frontend running, verify the rendered
-newsletter form and same-origin submission path:
-
-```bash
-yarn workspace web journey:newsletter
 ```
 
 ## Stop local services

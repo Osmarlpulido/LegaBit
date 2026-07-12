@@ -41,8 +41,8 @@ Status: in progress — executable API, validated configuration, request IDs, lo
 - C4. Add centralized error handling and response validation.
 - C5. Add liveness, readiness, graceful shutdown, and dependency timeouts.
 - C6. Add CORS/headers/body-size/rate-limit defaults appropriate to topology.
-- C7. **Done for local development:** Add Docker Compose replica-set orchestration, idempotent initialization, documented migration/start/stop flow, and opt-in isolated integration databases.
-- C8. **In progress:** Separately scheduled backend/frontend build, direct ESLint, typecheck, test, boundary, semantic OpenAPI, and reproducible no-network-font build jobs are delivered. The frontend has no database dependency and installs with lifecycle scripts disabled; deployment pipelines remain.
+- C7. **Done for host-run local development:** Add Docker Compose replica-set orchestration, idempotent initialization, documented migration/start/stop flow, and isolated integration databases. The profile advertises localhost and is explicitly not for containerized API clients.
+- C8. **In progress:** Separately scheduled backend/frontend build, direct ESLint, typecheck, test, boundary, semantic OpenAPI, reproducible build, and required real-Mongo integration jobs are delivered; deployment pipelines remain.
 
 Acceptance: the empty service is production-deployable, observable, safely terminates, and has no product traffic.
 
@@ -83,7 +83,7 @@ Status: in progress — newsletter contracts, affirmative consent evidence, priv
 - E3. **Not required for newsletter cutover:** No legacy production identifiers exist; MongoDB owns new document identifiers.
 - E4. **Not required:** There is no production source dataset requiring export/delta reconciliation.
 - E5. **In progress:** Local replica-set orchestration and separate runtime/migration credentials are documented; managed hosting, backups, alerts, and recovery remain.
-- E6. **Done for newsletter:** Versioned idempotent migration history, strict collection validator, and unique email index are implemented separately from API startup.
+- E6. **Done for newsletter:** Immutable versioned migrations, atomic lease-based claims with failure/stale-lock recovery, migration history, strict validator evolution, and the unique email index are implemented separately from API startup.
 - E7. **In progress:** Required affirmative consent, fixed policy version, server capture time, email normalization, and non-enumerating duplicate semantics are implemented; retention, deletion, and withdrawal workflows remain.
 - E8. **Done:** Application service, MongoDB repository, atomic normalized-email upsert, unique index, backend route, and real-Mongo integration verification are implemented.
 - E9. **In progress:** A bounded per-IP single-process limiter and privacy-safe public response are implemented; shared-scale enforcement and privacy-safe telemetry remain.
@@ -128,7 +128,7 @@ Status: in progress — same-origin auth/API rewrites, Better Auth frontend clie
 - G3. **Done:** Frontend database, Prisma, privileged Supabase, SDK, and server-secret dependencies are removed.
 - G4. Reduce auth callback to session-establishment responsibilities.
 - G5. Organize UI by feature and promote only reusable components to `packages/ui`.
-- G6. **In progress:** Backend integration and local same-origin newsletter journey verification are delivered; automated browser/component coverage remains.
+- G6. **In progress:** A real headless-browser newsletter journey fills and submits the form, verifies loading/success/reset UI, reads consent evidence from MongoDB, and cleans up; broader component and critical-journey coverage remains.
 - G7. Prove independent frontend rollback against supported backend versions.
 
 Acceptance: a frontend build cannot access privileged infrastructure and can deploy without backend-only environment variables.
@@ -145,6 +145,12 @@ Commit `05fb763` must not be considered complete until these findings are resolv
 Required verification includes supported-browser signal behavior, cancellation/timeout tests, negative boundary fixtures for relative imports and indirect secret access, CI installation behavior without Prisma, and retry classification tests.
 
 Resolution (2026-07-12): all four findings are closed. Signal compatibility and retry classification have automated tests; a durable negative boundary check runs in CI; and, because the application has no production data path to preserve, the unused Prisma newsletter fallback and `apps/web` database dependency were removed. Frontend CI installs with lifecycle scripts disabled and no longer generates Prisma.
+
+### Independent MongoDB workflow review follow-up (2026-07-12)
+
+The review of commit `12e4cb8` identified concurrent migration races, silently skipped CI integration tests, smoke-only journey coverage, mutable migration-001 validator evolution, a host-only Compose topology that was not explicit, and missing persistence readback in the journey.
+
+Resolution (2026-07-12): all six findings are closed. Migrations use atomic ownership leases with stale/failure recovery and immutable `001` plus validator-upgrade `002`; eight-runner real-Mongo concurrency and legacy-upgrade tests pass. Backend CI now requires a MongoDB 7 replica set and executes the integration suite. The Compose profile is explicitly host-client-only. The newsletter journey now drives the actual hydrated form in headless Chrome, asserts loading/success/reset behavior, verifies the generated record and consent timestamps directly in MongoDB, and removes its test data.
 
 ## Epic H — delivery and operations
 

@@ -4,7 +4,10 @@ import test from "node:test";
 import { newsletterMigrations, newsletterValidator } from "./newsletter-indexes.js";
 
 test("defines a stable versioned newsletter migration", () => {
-  assert.deepEqual(newsletterMigrations.map(({ id }) => id), ["001-newsletter-subscribers-schema"]);
+  assert.deepEqual(newsletterMigrations.map(({ id }) => id), [
+    "001-newsletter-subscribers-schema",
+    "002-newsletter-subscribers-strict-validator"
+  ]);
 });
 
 test("validator requires consent evidence and timestamps", () => {

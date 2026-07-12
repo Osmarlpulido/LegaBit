@@ -36,7 +36,10 @@ yarn workspace @legabit/backend dev
 
 Use `docker compose down` to stop MongoDB without deleting data. The local
 Compose service binds only to `127.0.0.1` and intentionally has no credentials;
-it is not a production deployment template.
+it is not a production deployment template. Its replica-set member advertises
+`localhost:27017`, so it supports host-run clients only. Do not use
+`mongodb:27017` from another container with this profile; create a deployment
+whose advertised member hostname is resolvable by every intended client.
 
 ## Commands
 
@@ -51,6 +54,18 @@ yarn openapi:generate
 yarn openapi:check
 yarn openapi:compat --base-ref origin/main
 ```
+
+Backend tests run without MongoDB by default and report the real-database suite
+as skipped. To require that suite locally, start the Compose replica set and run:
+
+```bash
+MONGODB_INTEGRATION_URI='mongodb://localhost:27017/?replicaSet=rs0' \
+yarn workspace @legabit/backend test
+```
+
+CI always supplies `MONGODB_INTEGRATION_URI` from a MongoDB 7 replica-set
+service. Replica-set initialization is a required step, so the backend job fails
+instead of silently skipping the real-Mongo integration and concurrency tests.
 
 Run `migrate` once for each environment before starting or deploying an API version that serves newsletter subscriptions. The versioned command idempotently installs the collection validator, unique index, and migration history; it is deliberately separate from API startup so the runtime MongoDB principal only needs data read/write privileges. Run migrations with a schema-management principal, then run the API with its more restricted runtime principal.
 
