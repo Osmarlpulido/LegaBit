@@ -39,14 +39,18 @@ yarn --version
   - `BETTER_AUTH_URL` — public frontend origin used for same-origin auth routes; defaults to `http://localhost:3000`.
   - `AUTH_TRUSTED_ORIGINS` — comma-separated exact frontend origins; defaults to `http://localhost:3000`.
   - `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` — configure both to enable the replacement Google login.
+  - `COINGECKO_API_KEY` — optional backend credential for higher CoinGecko limits.
 
 ### Frontend requirements
 
-Create `apps/web/.env.local` for local frontend configuration. Use [.env.example](./.env.example) as the reference.
+Create `apps/web/.env.local` for local frontend configuration. Use the frontend
+entries in [.env.example](./.env.example) as the reference; do not copy backend
+secrets such as MongoDB, Better Auth, Google OAuth, or CoinGecko credentials into
+the frontend environment.
 
 The frontend may also use:
 
-- `COINGECKO_API_KEY` for higher CoinGecko limits.
+- `API_INTERNAL_URL` for the server-side same-origin rewrite; it defaults to `http://localhost:4000`.
 - `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` for WalletConnect.
 - The optional marketing URL variables listed in `.env.example`.
 
@@ -195,12 +199,37 @@ yarn workspace @legabit/backend build
 yarn workspace @legabit/backend test
 ```
 
+Without `MONGODB_INTEGRATION_URI`, the backend test command runs the unit and HTTP
+tests but skips the real-MongoDB integration cases. To run the complete backend
+suite, start the local replica set and use:
+
+```bash
+MONGODB_INTEGRATION_URI='mongodb://localhost:27017/?replicaSet=rs0' \
+yarn workspace @legabit/backend test
+```
+
 ### Frontend
 
 ```bash
+yarn workspace web lint
+yarn workspace web boundaries:check
 yarn workspace web typecheck
+yarn workspace web test
 yarn workspace web build
 ```
+
+Run the newsletter browser and persistence journey separately after MongoDB, the
+API, and the frontend are running, as described above.
+
+## Hosted environments
+
+The repository does not yet contain staging or production deployment manifests.
+The target architecture requires independently deployed web and API applications,
+a same-origin proxy for `/api/v1/*` and `/api/auth/*`, and a managed MongoDB replica
+set. Record the selected providers, regions, environment promotion flow, migration
+job, secret ownership, backup policy, and rollback procedure before treating this
+README as a production deployment guide. The open deployment decisions are tracked
+in the architecture roadmap linked below.
 
 ## Stop local services
 
