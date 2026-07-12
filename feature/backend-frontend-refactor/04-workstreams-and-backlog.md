@@ -20,14 +20,14 @@ Acceptance: ADRs state context, decision, alternatives, consequences, owner, rev
 
 ## Epic B — contracts and API client
 
-Status: in progress — package rename and health/error contracts delivered; versioned product contracts, OpenAPI, compatibility checks, and frontend client remain
+Status: in progress — package rename, foundation contracts, reproducible OpenAPI generation, drift checking, and compatibility rules are delivered; versioned product contracts, semantic compatibility comparison, and frontend client remain
 
 - B1. Rename `packages/api` to a clearly non-executable contracts package.
 - B2. Define versioned newsletter, market, identity, health, and error schemas.
-- B3. Generate/check OpenAPI from the canonical schemas.
-- B4. Add contract compatibility checks to CI.
+- B3. **Done:** Generate/check a committed OpenAPI artifact from canonical Zod schemas.
+- B4. **In progress:** Backend builds reject OpenAPI drift; semantic comparison against the prior supported contract and full CI wiring remain.
 - B5. Add a typed frontend client with base URL, auth, request IDs, timeouts, and error mapping.
-- B6. Document additive versus breaking changes and support windows.
+- B6. **In progress:** Additive versus breaking changes are documented; concrete support windows remain to be approved.
 
 Acceptance: malformed requests and responses fail tests; a prior supported frontend contract remains compatible.
 

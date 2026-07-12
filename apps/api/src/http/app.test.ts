@@ -14,6 +14,23 @@ function createAuth(session: CurrentAuthSession | null = null): AuthService {
 }
 
 describe("health routes", () => {
+  it("publishes the versioned route schemas through OpenAPI", async () => {
+    const app = createApp({
+      auth: createAuth(),
+      database: { check: async () => undefined },
+      logger: false
+    });
+
+    await app.ready();
+    const document = app.swagger();
+
+    assert.ok(document.paths);
+    assert.ok(document.paths["/health/live"]);
+    assert.ok(document.paths["/health/ready"]);
+    assert.ok(document.paths["/api/v1/me"]);
+    await app.close();
+  });
+
   it("reports process liveness without checking dependencies", async () => {
     const app = createApp({
       auth: createAuth(),
