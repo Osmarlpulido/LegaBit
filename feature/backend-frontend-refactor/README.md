@@ -13,11 +13,11 @@ Last reviewed: 2026-07-12
 | API foundation | In progress | `apps/api`, configuration validation, MongoDB connection management, health endpoints, auth handler, current-user endpoint, errors, logging, shutdown, tests, and reproducible OpenAPI generation are implemented |
 | Shared API contracts | In progress | `packages/api` is renamed to `packages/api-contracts`; health, error, identity, market, and newsletter contracts drive route schemas, semantic compatibility checks, and the committed OpenAPI artifact |
 | Market-data extraction | Complete for the current non-production environment | Contracts, `/api/v1/markets`, resilient validated CoinGecko access, caching/coalescing, telemetry, tests, dashboard cutover, and legacy frontend route/adapter removal are implemented |
-| MongoDB provisioning and data migration | Not started | No production database, collections, indexes, validators, or data have been changed |
-| Newsletter extraction | In progress | Affirmative consent evidence, privacy-safe idempotency, rate limiting, backend contracts/service/repository, explicit index migration, frontend cutover, OpenAPI, and tests are implemented; provisioning and operational verification remain |
+| MongoDB provisioning and data migration | In progress | Local replica-set orchestration, versioned migration history, strict newsletter validator/index, and real-Mongo integration tests are implemented; managed hosting, backup, and recovery remain |
+| Newsletter extraction | In progress | Consent evidence, privacy-safe idempotency, rate limiting, backend ownership, versioned migrations, frontend cutover, concurrency tests, and local journey verification are implemented; policy and operational verification remain |
 | Identity and authorization boundary | In progress | Better Auth backend and frontend login/session/sign-out surfaces are implemented; live Google/MongoDB validation, account policy, tenancy, and authorization remain |
 | Frontend isolation | In progress | Same-origin auth/API rewrites, Better Auth client, typed market client/TanStack Query state, and dependency-boundary enforcement are implemented; legacy product routes remain in Next.js |
-| Supabase/Prisma removal | Complete for frontend runtime | Supabase auth/admin/PostgREST paths, SDK/configuration, and the frontend Prisma dependency are removed; historical Prisma migration tooling remains outside the frontend runtime |
+| Supabase/Prisma removal | Complete | Supabase runtime paths/SDK/configuration and all Prisma/PostgreSQL packages, migrations, scripts, dependencies, and environment configuration are removed |
 | Production routing and operations | Blocked | Deployment topology and MongoDB hosting decisions remain open |
 
 ## Goal

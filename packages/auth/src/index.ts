@@ -1,6 +1,13 @@
-import type { MembershipRole, PlatformRole } from "@legabit/db";
+export type MembershipRole =
+  | "organization_owner"
+  | "admin"
+  | "legal_operator"
+  | "educator"
+  | "student"
+  | "client"
+  | "community_moderator";
 
-export type { MembershipRole, PlatformRole };
+export type PlatformRole = "none" | "super_admin";
 
 /** Permisos atómicos para chequeos explícitos en servidor (expandir por dominio). */
 export const permissions = [

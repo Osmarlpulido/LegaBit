@@ -41,7 +41,7 @@ Status: in progress — executable API, validated configuration, request IDs, lo
 - C4. Add centralized error handling and response validation.
 - C5. Add liveness, readiness, graceful shutdown, and dependency timeouts.
 - C6. Add CORS/headers/body-size/rate-limit defaults appropriate to topology.
-- C7. Add local development orchestration and isolated integration database.
+- C7. **Done for local development:** Add Docker Compose replica-set orchestration, idempotent initialization, documented migration/start/stop flow, and opt-in isolated integration databases.
 - C8. **In progress:** Separately scheduled backend/frontend build, direct ESLint, typecheck, test, boundary, semantic OpenAPI, and reproducible no-network-font build jobs are delivered. The frontend has no database dependency and installs with lifecycle scripts disabled; deployment pipelines remain.
 
 Acceptance: the empty service is production-deployable, observable, safely terminates, and has no product traffic.
@@ -76,22 +76,22 @@ Resolution (2026-07-12): all implementation and test findings above are closed. 
 
 ## Epic E — newsletter module and data reconciliation
 
-Status: in progress — newsletter contracts, affirmative consent evidence, privacy-safe idempotency, bounded abuse controls, application service, MongoDB repository, explicit index migration, backend route, frontend cutover, OpenAPI, and tests are delivered; retention/deletion policy, provisioning, shared-scale controls, and operational verification remain
+Status: in progress — newsletter contracts, affirmative consent evidence, privacy-safe idempotency, bounded abuse controls, application service, MongoDB repository, versioned validator/index migrations, real-Mongo concurrency tests, local replica-set orchestration, backend route, frontend cutover, OpenAPI, and local journey verification are delivered; retention/deletion policy, managed provisioning, shared-scale controls, and operational verification remain
 
-- E1. Compare live PostgreSQL/Supabase schema and data to Prisma history in every environment.
+- E1. **Not required:** The application has no production PostgreSQL/Supabase data to reconcile.
 - E2. Design collections using access patterns, bounded-growth rules, references/embedding, consistency boundaries, validators, and indexes.
-- E3. Decide ID representation and create deterministic source-to-target ID mapping.
-- E4. Create a repeatable export/transform/load plus delta-reconciliation plan.
-- E5. Provision MongoDB replica sets, least-privilege users, backups, alerts, and migration runner.
-- E6. **In progress:** An explicit idempotent newsletter unique-index migration is implemented separately from API startup; validators, version tracking, and broader data migrations remain.
+- E3. **Not required for newsletter cutover:** No legacy production identifiers exist; MongoDB owns new document identifiers.
+- E4. **Not required:** There is no production source dataset requiring export/delta reconciliation.
+- E5. **In progress:** Local replica-set orchestration and separate runtime/migration credentials are documented; managed hosting, backups, alerts, and recovery remain.
+- E6. **Done for newsletter:** Versioned idempotent migration history, strict collection validator, and unique email index are implemented separately from API startup.
 - E7. **In progress:** Required affirmative consent, fixed policy version, server capture time, email normalization, and non-enumerating duplicate semantics are implemented; retention, deletion, and withdrawal workflows remain.
-- E8. **In progress:** Application service, MongoDB repository, atomic normalized-email upsert, unique index, and backend route are implemented; integration-database verification remains.
+- E8. **Done:** Application service, MongoDB repository, atomic normalized-email upsert, unique index, backend route, and real-Mongo integration verification are implemented.
 - E9. **In progress:** A bounded per-IP single-process limiter and privacy-safe public response are implemented; shared-scale enforcement and privacy-safe telemetry remain.
-- E10. Define concurrency-safe idempotency and transaction retry behavior and test both.
+- E10. **Done for the single-document workflow:** Real-Mongo tests prove concurrent duplicate idempotency; no multi-document transaction is required.
 - E11. Rehearse full load, delta sync, verification, cutover, and rollback on production-like data.
-- E12. **In progress:** The form now calls `/api/v1/newsletter/subscriptions`; live MongoDB outcome verification remains.
+- E12. **Done for local/non-production:** The rendered frontend origin, same-origin proxy, backend route, migration, and persisted consent outcome were verified end to end.
 - E13. Decouple newsletter enrollment from OAuth callback.
-- E14. **In progress:** Legacy Next.js/Supabase and Prisma runtime write paths are removed; historical Prisma migration tooling remains until the MongoDB design is finalized.
+- E14. **Done:** Legacy Next.js/Supabase write paths and all Prisma/PostgreSQL packages, migrations, scripts, dependencies, and environment configuration are removed.
 
 Acceptance: MongoDB is the sole verified write path; no records or required relationships are lost; validators and indexes are installed; duplicate/concurrent requests are safe; backup/restore and cutover recovery are rehearsed; consent semantics are approved.
 
@@ -128,7 +128,7 @@ Status: in progress — same-origin auth/API rewrites, Better Auth frontend clie
 - G3. **Done:** Frontend database, Prisma, privileged Supabase, SDK, and server-secret dependencies are removed.
 - G4. Reduce auth callback to session-establishment responsibilities.
 - G5. Organize UI by feature and promote only reusable components to `packages/ui`.
-- G6. Add component and critical-journey end-to-end tests.
+- G6. **In progress:** Backend integration and local same-origin newsletter journey verification are delivered; automated browser/component coverage remains.
 - G7. Prove independent frontend rollback against supported backend versions.
 
 Acceptance: a frontend build cannot access privileged infrastructure and can deploy without backend-only environment variables.

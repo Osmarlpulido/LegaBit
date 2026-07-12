@@ -1,12 +1,13 @@
 # LegaBit API
 
-Independent TypeScript backend for LegaBit. This foundation does not serve product traffic yet; the existing Next.js route handlers remain active during the migration.
+Independent TypeScript backend for LegaBit. It owns authentication, markets, newsletter persistence, and health routes.
 
 ## Configuration
 
 The runtime reads configuration from process environment variables. Required values:
 
 - `MONGODB_URI`: MongoDB replica-set connection string.
+- `MONGODB_MIGRATION_URI`: separate schema-management connection used only by migrations.
 - `MONGODB_DATABASE`: database name; defaults to `legabit`.
 - `BETTER_AUTH_SECRET`: required signing secret of at least 32 characters.
 - `BETTER_AUTH_URL`: public frontend origin used for same-origin auth routes; defaults to `http://localhost:3000`.
@@ -17,6 +18,26 @@ Optional server values are `API_HOST` (default `0.0.0.0`), `API_PORT` (default `
 
 Do not commit real connection strings. Production configuration must be injected by the hosting platform.
 
+For local development, the repository root [`compose.yaml`](../../compose.yaml)
+provides a persistent single-node MongoDB replica set. Start and initialize it,
+then apply migrations before running the API:
+
+```bash
+docker compose up -d mongodb mongodb-init
+docker compose ps -a
+MONGODB_MIGRATION_URI='mongodb://localhost:27017/?replicaSet=rs0' \
+MONGODB_DATABASE='legabit' \
+yarn workspace @legabit/backend migrate
+MONGODB_URI='mongodb://localhost:27017/?replicaSet=rs0' \
+MONGODB_DATABASE='legabit' \
+BETTER_AUTH_SECRET='replace-with-at-least-32-random-characters' \
+yarn workspace @legabit/backend dev
+```
+
+Use `docker compose down` to stop MongoDB without deleting data. The local
+Compose service binds only to `127.0.0.1` and intentionally has no credentials;
+it is not a production deployment template.
+
 ## Commands
 
 ```bash
@@ -25,13 +46,13 @@ yarn workspace @legabit/backend dev
 yarn workspace @legabit/backend typecheck
 yarn workspace @legabit/backend test
 yarn workspace @legabit/backend build
-yarn workspace @legabit/backend migrate:newsletter-indexes
+yarn workspace @legabit/backend migrate
 yarn openapi:generate
 yarn openapi:check
 yarn openapi:compat --base-ref origin/main
 ```
 
-Run `migrate:newsletter-indexes` once for each environment before starting or deploying an API version that serves newsletter subscriptions. The command idempotently creates the unique email index and exits; it is deliberately separate from API startup so the runtime MongoDB principal only needs data read/write privileges. Run the migration with a schema-management principal, then run the API with its more restricted runtime principal.
+Run `migrate` once for each environment before starting or deploying an API version that serves newsletter subscriptions. The versioned command idempotently installs the collection validator, unique index, and migration history; it is deliberately separate from API startup so the runtime MongoDB principal only needs data read/write privileges. Run migrations with a schema-management principal, then run the API with its more restricted runtime principal.
 
 ## API contracts and compatibility
 

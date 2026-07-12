@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint src --max-warnings=0",
     "boundaries:check": "node scripts/verify-boundaries.mjs",
+    "journey:newsletter": "node scripts/verify-newsletter-journey.mjs",
     "test": "node --import tsx --test src/lib/*.test.ts",
     "typecheck": "tsc --noEmit"
   },

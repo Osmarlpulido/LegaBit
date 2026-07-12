@@ -5,7 +5,7 @@ LegaBit is being migrated into two independently deployable applications inside 
 - **Frontend:** `apps/web` — Next.js 15 and React 19.
 - **Backend:** `apps/api` — Fastify, TypeScript, and MongoDB.
 
-The migration is incremental. The frontend still serves the existing newsletter, crypto, authentication, and diagnostic routes through Next.js. The new backend currently provides its runtime foundation and health endpoints; it does not serve product traffic yet.
+The frontend serves the user interface while the backend owns authentication, newsletter persistence, market data, and health endpoints.
 
 ## Requirements
 
@@ -29,6 +29,7 @@ yarn --version
 - Replica-set support. Use a managed MongoDB replica set in hosted environments; the local Docker instructions below create a single-node development replica set.
 - The following environment variables:
   - `MONGODB_URI` — required MongoDB connection string.
+  - `MONGODB_MIGRATION_URI` — schema-management connection used only by the migration command.
   - `MONGODB_DATABASE` — optional; defaults to `legabit`.
   - `API_HOST` — optional; defaults to `0.0.0.0`.
   - `API_PORT` — optional; defaults to `4000`.
@@ -41,9 +42,9 @@ yarn --version
 
 ### Frontend requirements
 
-Create `apps/web/.env.local` for local frontend and legacy server-route configuration. Use [.env.example](./.env.example) as the reference.
+Create `apps/web/.env.local` for local frontend configuration. Use [.env.example](./.env.example) as the reference.
 
-The current frontend may also use:
+The frontend may also use:
 
 - `COINGECKO_API_KEY` for higher CoinGecko limits.
 - `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` for WalletConnect.
@@ -59,39 +60,33 @@ From the repository root:
 yarn install
 ```
 
-The current Prisma package downloads a platform-specific engine during installation. If that legacy download is blocked by local TLS or network configuration, you can install the new backend dependencies with lifecycle scripts disabled:
-
-```bash
-yarn install --ignore-scripts
-```
-
-That fallback is enough for backend and frontend development that does not use the standalone Prisma migration tooling. `packages/db` remains only as migration history/tooling while the MongoDB design is pending.
-
 ## Start MongoDB locally
 
-If MongoDB is not already available, Docker is the quickest local option:
+The Compose setup starts MongoDB 7, persists development data in a named volume,
+and idempotently initializes a single-node `rs0` replica set:
 
 ```bash
-docker run --rm -d \
-  --name legabit-mongo \
-  -p 27017:27017 \
-  mongo:7 \
-  --replSet rs0 \
-  --bind_ip_all
+docker compose up -d mongodb mongodb-init
 ```
 
-Initialize the single-node replica set once after the container starts:
+The initializer exits successfully once initialization is complete. Wait for
+MongoDB to become healthy before running migrations or the API:
 
 ```bash
-docker exec legabit-mongo \
-  mongosh --quiet --eval 'rs.initiate({_id:"rs0",members:[{_id:0,host:"localhost:27017"}]})'
+docker compose ps -a
 ```
 
-Confirm it is ready:
+`mongodb` should report `healthy` and `mongodb-init` should report an exit code of
+`0`. Initialization is safe to run again. MongoDB is bound only to
+`127.0.0.1:27017` and this local setup intentionally has no credentials; do not
+use it as a hosted-environment configuration.
+
+Apply the backend's idempotent MongoDB migrations before starting the API:
 
 ```bash
-docker exec legabit-mongo \
-  mongosh --quiet --eval 'db.adminCommand({ ping: 1 })'
+MONGODB_MIGRATION_URI='mongodb://localhost:27017/?replicaSet=rs0' \
+MONGODB_DATABASE='legabit' \
+yarn workspace @legabit/backend migrate
 ```
 
 ## Build shared API contracts
@@ -194,17 +189,23 @@ yarn workspace web typecheck
 yarn workspace web build
 ```
 
-The frontend checks do not require Prisma client generation.
+With MongoDB, the migrated API, and the frontend running, verify the rendered
+newsletter form and same-origin submission path:
+
+```bash
+yarn workspace web journey:newsletter
+```
 
 ## Stop local services
 
-Stop the development servers with `Ctrl+C`. Stop the temporary MongoDB container with:
+Stop the development servers with `Ctrl+C`. Stop local MongoDB with:
 
 ```bash
-docker stop legabit-mongo
+docker compose down
 ```
 
-Because the container was created with `--rm` and no volume, its data is deleted when it stops. Add a Docker volume if persistent local data is required.
+Local data remains in the `legabit_mongodb-data` Compose volume. To deliberately
+delete that data and recreate an empty database, run `docker compose down -v`.
 
 ## Architecture roadmap
 
