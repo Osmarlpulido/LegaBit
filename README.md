@@ -55,12 +55,11 @@ SUPABASE_SECRET_KEY=
 
 The current frontend may also use:
 
-- `DATABASE_URL` and `DIRECT_URL` for its temporary Prisma/PostgreSQL fallback.
 - `COINGECKO_API_KEY` for higher CoinGecko limits.
 - `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` for WalletConnect.
 - The optional marketing URL variables listed in `.env.example`.
 
-Prisma/PostgreSQL, Supabase Auth, and privileged Supabase data access are transitional frontend dependencies. Better Auth will be self-hosted in `apps/api` with MongoDB-backed sessions. Supabase packages and configuration will be removed only after authentication and data routes cut over successfully.
+Privileged Supabase data access remains a transitional frontend dependency. Better Auth is self-hosted in `apps/api` with MongoDB-backed sessions. Supabase packages and configuration will be removed after the newsletter and diagnostic routes cut over.
 
 ## Install dependencies
 
@@ -76,11 +75,7 @@ The current Prisma package downloads a platform-specific engine during installat
 yarn install --ignore-scripts
 ```
 
-That fallback is enough for backend development and tests. The legacy frontend's Prisma route may still require a successful client generation:
-
-```bash
-yarn workspace @legabit/db generate
-```
+That fallback is enough for backend and frontend development that does not use the standalone Prisma migration tooling. `packages/db` remains only as migration history/tooling while the MongoDB design is pending.
 
 ## Start MongoDB locally
 
@@ -209,7 +204,7 @@ yarn workspace web typecheck
 yarn workspace web build
 ```
 
-The frontend checks require its transitional Prisma client and environment to be configured successfully.
+The frontend checks do not require Prisma client generation.
 
 ## Stop local services
 

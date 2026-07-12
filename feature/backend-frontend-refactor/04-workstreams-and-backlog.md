@@ -33,7 +33,7 @@ Acceptance: malformed requests and responses fail tests; a prior supported front
 
 ## Epic C — backend platform
 
-Status: in progress — executable API, validated configuration, request IDs, logging, centralized safe errors, health checks, graceful shutdown, MongoDB connection boundary, initial tests, and separately scheduled CI jobs delivered; true frontend dependency independence, routing, security defaults, integration database, and deployment remain
+Status: in progress — executable API, validated configuration, request IDs, logging, centralized safe errors, health checks, graceful shutdown, MongoDB connection boundary, initial tests, and separately scheduled CI jobs delivered; routing, security defaults, integration database, and deployment remain
 
 - C1. Scaffold executable API and composition root.
 - C2. Validate environment at startup with secret-safe diagnostics.
@@ -42,7 +42,7 @@ Status: in progress — executable API, validated configuration, request IDs, lo
 - C5. Add liveness, readiness, graceful shutdown, and dependency timeouts.
 - C6. Add CORS/headers/body-size/rate-limit defaults appropriate to topology.
 - C7. Add local development orchestration and isolated integration database.
-- C8. **In progress:** Separately scheduled backend/frontend build, lint, typecheck, test, and OpenAPI CI jobs are delivered; frontend installation still traverses the root workspace and Prisma, and deployment pipelines remain.
+- C8. **In progress:** Separately scheduled backend/frontend build, lint, typecheck, test, boundary, and OpenAPI CI jobs are delivered. The frontend has no database dependency and installs with lifecycle scripts disabled; deployment pipelines remain.
 
 Acceptance: the empty service is production-deployable, observable, safely terminates, and has no product traffic.
 
@@ -119,7 +119,7 @@ Status: in progress — same-origin auth/API rewrites, Better Auth frontend clie
 
 - G1. **Done with narrow legacy-route exceptions:** Durable checks reject package and relative backend/database imports plus indirect server-environment access. Remove the explicit server-only allowlist at route cutover.
 - G2. **In progress:** Market state uses the typed client and TanStack Query with tested bounded transient retries; migrate newsletter and any remaining server state before completion.
-- G3. Remove privileged Supabase client and database dependencies.
+- G3. **In progress:** The frontend Prisma/database dependency and fallback are removed; privileged Supabase data access remains until newsletter cutover.
 - G4. Reduce auth callback to session-establishment responsibilities.
 - G5. Organize UI by feature and promote only reusable components to `packages/ui`.
 - G6. Add component and critical-journey end-to-end tests.
@@ -138,7 +138,7 @@ Commit `05fb763` must not be considered complete until these findings are resolv
 
 Required verification includes supported-browser signal behavior, cancellation/timeout tests, negative boundary fixtures for relative imports and indirect secret access, CI installation behavior without Prisma, and retry classification tests.
 
-Resolution (2026-07-12): the signal compatibility, boundary bypass, and retry-policy findings are closed with automated frontend tests and a durable boundary check wired into CI. The C8/G3 Prisma coupling remains open: removing the live newsletter fallback before source-data and production-path confirmation would change behavior, so frontend CI must not be described as dependency-independent until newsletter cutover or an approved isolated build design.
+Resolution (2026-07-12): all four findings are closed. Signal compatibility and retry classification have automated tests; a durable negative boundary check runs in CI; and, because the application has no production data path to preserve, the unused Prisma newsletter fallback and `apps/web` database dependency were removed. Frontend CI installs with lifecycle scripts disabled and no longer generates Prisma.
 
 ## Epic H — delivery and operations
 

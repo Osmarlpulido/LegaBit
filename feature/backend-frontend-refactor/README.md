@@ -17,7 +17,7 @@ Last reviewed: 2026-07-12
 | Newsletter extraction | Not started | Existing Next.js route and persistence paths remain active |
 | Identity and authorization boundary | In progress | Better Auth backend and frontend login/session/sign-out surfaces are implemented; live Google/MongoDB validation, account policy, tenancy, and authorization remain |
 | Frontend isolation | In progress | Same-origin auth/API rewrites, Better Auth client, typed market client/TanStack Query state, and dependency-boundary enforcement are implemented; legacy product routes remain in Next.js |
-| Supabase removal | In progress | Supabase auth clients, middleware, callback, sign-out route, and SSR SDK are removed; admin/PostgREST newsletter paths and the remaining SDK stay until newsletter cutover |
+| Supabase/Prisma removal | In progress | Supabase auth paths and the frontend Prisma fallback/dependency are removed; admin/PostgREST newsletter paths and the remaining Supabase SDK stay until newsletter cutover |
 | Production routing and operations | Blocked | Deployment topology and MongoDB hosting decisions remain open |
 
 ## Goal

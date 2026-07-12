@@ -1,5 +1,4 @@
 import { newsletterSubscribeInputSchema } from "@legabit/api-contracts";
-import { prisma } from "@legabit/db";
 
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
@@ -7,19 +6,11 @@ function jsonError(status: number, body: Record<string, unknown>) {
   return Response.json(body, { status });
 }
 
-function hasDatabaseUrl(): boolean {
-  return Boolean(process.env.DATABASE_URL?.trim());
-}
-
 function hasSupabaseServiceCredentials(): boolean {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
   const key =
     process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() || process.env.SUPABASE_SECRET_KEY?.trim();
   return Boolean(url && key);
-}
-
-function isUniqueConstraintError(error: unknown): error is { code: "P2002" } {
-  return typeof error === "object" && error !== null && "code" in error && error.code === "P2002";
 }
 
 async function subscribeViaSupabase(
@@ -63,11 +54,10 @@ async function subscribeViaSupabase(
 }
 
 export async function POST(request: Request) {
-  if (!hasDatabaseUrl() && !hasSupabaseServiceCredentials()) {
+  if (!hasSupabaseServiceCredentials()) {
     return jsonError(503, {
       code: "MISSING_DATA_STORE",
-      message:
-        "Configura DATABASE_URL (Prisma) o Supabase con NEXT_PUBLIC_SUPABASE_URL y SUPABASE_SECRET_KEY (o SUPABASE_SERVICE_ROLE_KEY)."
+      message: "Configura Supabase con NEXT_PUBLIC_SUPABASE_URL y SUPABASE_SECRET_KEY (o SUPABASE_SERVICE_ROLE_KEY)."
     });
   }
 
@@ -93,37 +83,25 @@ export async function POST(request: Request) {
   const { email, displayName, phone, source } = parsed.data;
 
   try {
-    // Preferir Supabase si hay clave de servicio: evita Prisma con DATABASE_URL rota o vacía.
-    if (hasSupabaseServiceCredentials()) {
-      const supResult = await subscribeViaSupabase(email, displayName, phone, source);
-      if (supResult.duplicate) {
-        return Response.json({
-          ok: true as const,
-          alreadySubscribed: true as const,
-          message: "Este correo ya está suscrito."
-        });
-      }
-      if (supResult.missingTable) {
-        return jsonError(503, {
-          code: "TABLE_MISSING",
-          message:
-            "Falta la tabla o la columna phone en Supabase. Abre packages/db/supabase-sql-editor/newsletter_subscriber.sql, cópialo en SQL Editor de tu proyecto Supabase y ejecútalo una vez."
-        });
-      }
-      if (supResult.other) {
-        return jsonError(503, {
-          code: "INTERNAL",
-          message: "No pudimos registrar la suscripción. Revisa los logs del servidor."
-        });
-      }
-    } else if (hasDatabaseUrl()) {
-      await prisma.newsletterSubscriber.create({
-        data: {
-          email,
-          displayName,
-          phone,
-          source
-        }
+    const supResult = await subscribeViaSupabase(email, displayName, phone, source);
+    if (supResult.duplicate) {
+      return Response.json({
+        ok: true as const,
+        alreadySubscribed: true as const,
+        message: "Este correo ya está suscrito."
+      });
+    }
+    if (supResult.missingTable) {
+      return jsonError(503, {
+        code: "TABLE_MISSING",
+        message:
+          "Falta la tabla o la columna phone en Supabase. Abre packages/db/supabase-sql-editor/newsletter_subscriber.sql, cópialo en SQL Editor de tu proyecto Supabase y ejecútalo una vez."
+      });
+    }
+    if (supResult.other) {
+      return jsonError(503, {
+        code: "INTERNAL",
+        message: "No pudimos registrar la suscripción. Revisa los logs del servidor."
       });
     }
 
@@ -133,14 +111,6 @@ export async function POST(request: Request) {
       message: "Suscripción registrada correctamente."
     });
   } catch (e) {
-    if (isUniqueConstraintError(e)) {
-      return Response.json({
-        ok: true as const,
-        alreadySubscribed: true as const,
-        message: "Este correo ya está suscrito."
-      });
-    }
-
     if (e instanceof Error && e.message.includes("SUPABASE_")) {
       console.error("[api/newsletter]", e);
       return jsonError(503, {
@@ -152,8 +122,7 @@ export async function POST(request: Request) {
     console.error("[api/newsletter]", e);
     return jsonError(503, {
       code: "INTERNAL",
-      message:
-        "No pudimos registrar la suscripción (base de datos no disponible o error interno). Si usas Prisma, revisa DATABASE_URL y migraciones."
+      message: "No pudimos registrar la suscripción (servicio de datos no disponible o error interno)."
     });
   }
 }
