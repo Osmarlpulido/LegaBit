@@ -89,6 +89,12 @@ jobs:
       - name: Lint frontend
         run: yarn workspace web lint
 
+      - name: Verify frontend boundaries
+        run: yarn workspace web boundaries:check
+
+      - name: Test frontend
+        run: yarn workspace web test
+
       - name: Typecheck frontend
         run: yarn workspace web typecheck
 

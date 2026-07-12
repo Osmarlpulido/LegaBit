@@ -33,7 +33,12 @@ const forbiddenFrontendImports = {
       group: [
         "@legabit/db/*",
         "@legabit/api/*",
+        "**/packages/db",
+        "**/packages/db/**",
         "**/apps/api/**",
+        "../**/packages/db",
+        "../**/packages/db/**",
+        "../**/apps/api/**",
         "../../api/**",
         "../../../api/**",
         "../../../../api/**",
@@ -46,22 +51,44 @@ const forbiddenFrontendImports = {
   ]
 };
 
-const restrictedServerEnvironmentVariables = [
-  "DATABASE_URL",
-  "DIRECT_URL",
-  "SUPABASE_SECRET_KEY",
-  "SUPABASE_SERVICE_ROLE_KEY",
-  "BETTER_AUTH_SECRET"
-].flatMap((name) => [
+const processEnvObject = "MemberExpression[object.name='process'][property.name='env']";
+const computedProcessEnvObject = "MemberExpression[object.name='process'][computed=true][property.value='env']";
+
+const restrictedEnvironmentAccess = [
   {
-    selector: `MemberExpression[object.object.name='process'][object.property.name='env'][property.name='${name}']`,
-    message: `${name} is a server secret and must not be read by frontend code.`
+    selector: "ImportExpression[source.value=/\\/(?:packages\\/db|apps\\/api)(?:\\/|$)/]",
+    message: "Dynamic imports must not bypass frontend database or backend boundaries."
   },
   {
-    selector: `MemberExpression[object.object.name='process'][object.property.name='env'][computed=true][property.value='${name}']`,
-    message: `${name} is a server secret and must not be read by frontend code.`
+    selector: "CallExpression[callee.name='require'][arguments.0.value=/\\/(?:packages\\/db|apps\\/api)(?:\\/|$)/]",
+    message: "require() must not bypass frontend database or backend boundaries."
+  },
+  {
+    selector:
+      ":matches(MemberExpression, OptionalMemberExpression)" +
+      ":matches([object.object.name='process'][object.property.name='env'], " +
+      "[object.object.name='process'][object.computed=true][object.property.value='env'])" +
+      ":not([computed=false][property.name=/^NEXT_PUBLIC_/])" +
+      ":not([computed=true][property.value=/^NEXT_PUBLIC_/])",
+    message: "Only statically named NEXT_PUBLIC_* environment variables may be read in frontend code."
+  },
+  {
+    selector: `VariableDeclarator[init.type='MemberExpression']:matches([init.object.name='process'][init.property.name='env'], [init.object.name='process'][init.computed=true][init.property.value='env'])`,
+    message: "Do not alias or destructure process.env; access a static NEXT_PUBLIC_* key directly."
+  },
+  {
+    selector: `AssignmentExpression[right.type='MemberExpression']:matches([right.object.name='process'][right.property.name='env'], [right.object.name='process'][right.computed=true][right.property.value='env'])`,
+    message: "Do not alias process.env; access a static NEXT_PUBLIC_* key directly."
+  },
+  {
+    selector: `:matches(CallExpression, NewExpression) > :matches(${processEnvObject}, ${computedProcessEnvObject})`,
+    message: "Do not pass process.env indirectly; access a static NEXT_PUBLIC_* key directly."
+  },
+  {
+    selector: `SpreadElement > :matches(${processEnvObject}, ${computedProcessEnvObject})`,
+    message: "Do not spread process.env into frontend data."
   }
-]);
+];
 
 export default [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
@@ -69,7 +96,7 @@ export default [
     files: ["src/**/*.{js,jsx,ts,tsx}"],
     rules: {
       "no-restricted-imports": ["error", forbiddenFrontendImports],
-      "no-restricted-syntax": ["error", ...restrictedServerEnvironmentVariables]
+      "no-restricted-syntax": ["error", ...restrictedEnvironmentAccess]
     }
   },
   {
@@ -78,6 +105,9 @@ export default [
     files: [
       "src/app/api/newsletter/route.ts",
       "src/app/api/health/data/route.ts",
+      "src/app/api/crypto/route.ts",
+      "src/lib/auth/current-user.ts",
+      "src/lib/coingecko.ts",
       "src/lib/supabase/admin.ts",
       "src/lib/supabase/env.ts"
     ],

@@ -4,7 +4,36 @@ import {
   type MarketsResponse
 } from "@legabit/api-contracts";
 
-import { apiRequest } from "@/lib/api-client";
+import { ApiClientError, apiRequest } from "@/lib/api-client";
+
+const MAX_MARKET_QUERY_RETRIES = 2;
+
+/**
+ * Retry only failures that are likely to recover without user action.
+ *
+ * Rate limits deliberately do not retry until the client supports an explicit
+ * Retry-After/backoff policy. Contract-validation failures and other 4xx
+ * responses are deterministic and must not create additional traffic either.
+ */
+export function shouldRetryMarketQuery(failureCount: number, error: unknown): boolean {
+  if (failureCount >= MAX_MARKET_QUERY_RETRIES || !(error instanceof ApiClientError)) {
+    return false;
+  }
+
+  if (error.code === "RATE_LIMITED" || error.status === 429) {
+    return false;
+  }
+
+  if (error.status >= 400 && error.status < 500) {
+    return false;
+  }
+
+  return (
+    error.status === 0 ||
+    (error.status >= 500 && error.status < 600 &&
+      (error.code === "SERVICE_UNAVAILABLE" || error.code === "INTERNAL"))
+  );
+}
 
 export type MarketQuery = {
   currency: MarketCurrency;

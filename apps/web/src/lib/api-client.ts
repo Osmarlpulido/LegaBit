@@ -44,8 +44,42 @@ function resolveUrl(path: string): string {
   return `${baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
-function combineSignals(timeoutSignal: AbortSignal, signal?: AbortSignal | null): AbortSignal {
-  return signal ? AbortSignal.any([signal, timeoutSignal]) : timeoutSignal;
+function createRequestCancellation(signal: AbortSignal | null | undefined, timeoutMs: number) {
+  const controller = new AbortController();
+  let timedOut = false;
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+
+  const abortFromCaller = () => {
+    if (!controller.signal.aborted) {
+      controller.abort(signal?.reason);
+    }
+    if (timeout !== undefined) {
+      clearTimeout(timeout);
+    }
+  };
+
+  if (signal?.aborted) {
+    abortFromCaller();
+  } else {
+    signal?.addEventListener("abort", abortFromCaller, { once: true });
+    timeout = setTimeout(() => {
+      if (!controller.signal.aborted) {
+        timedOut = true;
+        controller.abort();
+      }
+    }, timeoutMs);
+  }
+
+  return {
+    didTimeOut: () => timedOut,
+    dispose: () => {
+      if (timeout !== undefined) {
+        clearTimeout(timeout);
+      }
+      signal?.removeEventListener("abort", abortFromCaller);
+    },
+    signal: controller.signal
+  };
 }
 
 async function readJson(response: Response): Promise<unknown> {
@@ -60,17 +94,16 @@ export async function apiRequest<T>(
   path: string,
   { requestId = createRequestId(), schema, timeoutMs = DEFAULT_TIMEOUT_MS, ...init }: ApiRequestOptions<T>
 ): Promise<T> {
-  const timeoutController = new AbortController();
-  const timeout = setTimeout(() => timeoutController.abort(), timeoutMs);
   const headers = new Headers(init.headers);
   headers.set("x-request-id", requestId);
+  const cancellation = createRequestCancellation(init.signal, timeoutMs);
 
   try {
     const response = await fetch(resolveUrl(path), {
       ...init,
       credentials: init.credentials ?? "include",
       headers,
-      signal: combineSignals(timeoutController.signal, init.signal)
+      signal: cancellation.signal
     });
     const body = await readJson(response);
 
@@ -102,7 +135,7 @@ export async function apiRequest<T>(
 
     return parsed.data;
   } catch (error) {
-    if (timeoutController.signal.aborted) {
+    if (cancellation.didTimeOut()) {
       throw new ApiClientError(
         { code: "SERVICE_UNAVAILABLE", message: "The request timed out.", requestId },
         0
@@ -116,6 +149,6 @@ export async function apiRequest<T>(
       0
     );
   } finally {
-    clearTimeout(timeout);
+    cancellation.dispose();
   }
 }

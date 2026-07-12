@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 
 import { CryptoTable } from "@/components/dashboard/crypto-table";
 import { FilterBar } from "@/components/dashboard/filter-bar";
-import { fetchMarketData } from "@/lib/market-api";
+import { fetchMarketData, shouldRetryMarketQuery } from "@/lib/market-api";
 
 type Tab = "all" | "defi" | "layer1" | "stablecoins";
 
@@ -41,7 +41,8 @@ export function DashboardClient() {
   const markets = useQuery({
     queryKey: ["markets", { currency, page: 1, pageSize: 50 }],
     queryFn: ({ signal }) => fetchMarketData({ currency, page: 1, pageSize: 50, signal }),
-    refetchInterval: 60_000
+    refetchInterval: 60_000,
+    retry: shouldRetryMarketQuery
   });
   const coins = useMemo(() => markets.data?.coins ?? [], [markets.data?.coins]);
   const global = markets.data?.global ?? null;

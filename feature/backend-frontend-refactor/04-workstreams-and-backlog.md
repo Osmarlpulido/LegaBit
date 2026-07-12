@@ -20,20 +20,20 @@ Acceptance: ADRs state context, decision, alternatives, consequences, owner, rev
 
 ## Epic B — contracts and API client
 
-Status: in progress — package rename, foundation contracts, reproducible OpenAPI generation, CI drift checking, compatibility rules, and the typed frontend client are delivered; semantic compatibility comparison remains
+Status: in progress — package rename, foundation contracts, reproducible OpenAPI generation, CI drift checking, compatibility rules, and a tested browser-compatible typed frontend client are delivered; semantic contract comparison remains
 
 - B1. Rename `packages/api` to a clearly non-executable contracts package.
 - B2. Define versioned newsletter, market, identity, health, and error schemas.
 - B3. **Done:** Generate/check a committed OpenAPI artifact from canonical Zod schemas.
 - B4. **In progress:** Backend builds and CI reject OpenAPI drift; semantic comparison against the prior supported contract remains.
-- B5. **Done:** Add a typed frontend client with configurable base URL, credentials, request IDs, cancellation/timeouts, runtime response validation, and safe error mapping.
+- B5. **Done:** The tested typed client provides configurable base URL, credentials, request IDs, browser-compatible cancellation/timeouts, runtime response validation, and safe error mapping.
 - B6. **In progress:** Additive versus breaking changes are documented; concrete support windows remain to be approved.
 
 Acceptance: malformed requests and responses fail tests; a prior supported frontend contract remains compatible.
 
 ## Epic C — backend platform
 
-Status: in progress — executable API, validated configuration, request IDs, logging, centralized safe errors, health checks, graceful shutdown, MongoDB connection boundary, initial tests, and independent CI jobs delivered; routing, security defaults, integration database, and deployment remain
+Status: in progress — executable API, validated configuration, request IDs, logging, centralized safe errors, health checks, graceful shutdown, MongoDB connection boundary, initial tests, and separately scheduled CI jobs delivered; true frontend dependency independence, routing, security defaults, integration database, and deployment remain
 
 - C1. Scaffold executable API and composition root.
 - C2. Validate environment at startup with secret-safe diagnostics.
@@ -42,7 +42,7 @@ Status: in progress — executable API, validated configuration, request IDs, lo
 - C5. Add liveness, readiness, graceful shutdown, and dependency timeouts.
 - C6. Add CORS/headers/body-size/rate-limit defaults appropriate to topology.
 - C7. Add local development orchestration and isolated integration database.
-- C8. **In progress:** Independent backend/frontend build, lint, typecheck, test, and OpenAPI CI jobs are delivered; deployment pipelines remain.
+- C8. **In progress:** Separately scheduled backend/frontend build, lint, typecheck, test, and OpenAPI CI jobs are delivered; frontend installation still traverses the root workspace and Prisma, and deployment pipelines remain.
 
 Acceptance: the empty service is production-deployable, observable, safely terminates, and has no product traffic.
 
@@ -115,10 +115,10 @@ Acceptance: no caller can select an arbitrary tenant/user identity; backend auth
 
 ## Epic G — frontend isolation
 
-Status: in progress — same-origin auth/API rewrites, Better Auth frontend client, dependency-boundary enforcement, and TanStack Query market state are delivered; newsletter and remaining product API migrations remain
+Status: in progress — same-origin auth/API rewrites, Better Auth frontend client, initial dependency-boundary enforcement, and TanStack Query market state are delivered; boundary hardening, newsletter, and remaining product API migrations remain
 
-- G1. **Done with narrow legacy-route exceptions:** Add forbidden-import rules for `@legabit/db`, backend modules, privileged clients, and server secrets. Remove the newsletter/health allowlist at their cutover.
-- G2. **In progress:** Market state uses the typed client and TanStack Query; migrate newsletter and any remaining server state before completion.
+- G1. **Done with narrow legacy-route exceptions:** Durable checks reject package and relative backend/database imports plus indirect server-environment access. Remove the explicit server-only allowlist at route cutover.
+- G2. **In progress:** Market state uses the typed client and TanStack Query with tested bounded transient retries; migrate newsletter and any remaining server state before completion.
 - G3. Remove privileged Supabase client and database dependencies.
 - G4. Reduce auth callback to session-establishment responsibilities.
 - G5. Organize UI by feature and promote only reusable components to `packages/ui`.
@@ -126,6 +126,19 @@ Status: in progress — same-origin auth/API rewrites, Better Auth frontend clie
 - G7. Prove independent frontend rollback against supported backend versions.
 
 Acceptance: a frontend build cannot access privileged infrastructure and can deploy without backend-only environment variables.
+
+### Independent frontend/API-client review follow-up (2026-07-12)
+
+Commit `05fb763` must not be considered complete until these findings are resolved:
+
+- **High — B5/G2:** `AbortSignal.any()` is called whenever TanStack Query supplies a cancellation signal. Browsers without that API fail before issuing the market request. Replace it with feature detection and a backward-compatible signal combiner, and add coverage for cancellation and timeout cleanup.
+- **Medium — G1:** The current lint boundary can be bypassed with relative imports into `packages/db` or other backend paths. Secret checks can also be bypassed through destructuring, aliases, or dynamic `process.env` access. Expand package/path restrictions and default-deny server environment access outside the explicit legacy server-only allowlist.
+- **Medium — C8/G3:** Frontend CI is a separate job but still performs a root workspace installation while `apps/web` depends on `@legabit/db`. This executes Prisma installation/generation and keeps frontend verification coupled to backend-only tooling. Remove the web database dependency during route extraction or use a genuinely isolated install before claiming independent frontend CI.
+- **Medium — G2:** TanStack Query currently applies its default retry behavior to every `ApiClientError`, including non-transient client errors and rate limiting. Add an explicit retry policy based on status/code so invalid requests are not retried and throttling follows the approved provider policy.
+
+Required verification includes supported-browser signal behavior, cancellation/timeout tests, negative boundary fixtures for relative imports and indirect secret access, CI installation behavior without Prisma, and retry classification tests.
+
+Resolution (2026-07-12): the signal compatibility, boundary bypass, and retry-policy findings are closed with automated frontend tests and a durable boundary check wired into CI. The C8/G3 Prisma coupling remains open: removing the live newsletter fallback before source-data and production-path confirmation would change behavior, so frontend CI must not be described as dependency-independent until newsletter cutover or an approved isolated build design.
 
 ## Epic H — delivery and operations
 
