@@ -6,6 +6,8 @@ import {
   healthReadyResponseSchema,
   marketsQuerySchema,
   marketsResponseSchema,
+  newsletterSubscribeInputSchema,
+  newsletterSubscribeResponseSchema,
   toOpenApiSchema
 } from "@legabit/api-contracts";
 import cors from "@fastify/cors";
@@ -17,6 +19,7 @@ import type { AuthService } from "../modules/identity/auth.js";
 import { CoinGeckoMarketDataProvider } from "../infrastructure/coingecko.js";
 import { CachedMarketDataProvider } from "../infrastructure/market-cache.js";
 import { GetMarkets } from "../modules/markets/markets.js";
+import { SubscribeNewsletter } from "../modules/newsletter/newsletter.js";
 import { registerAuthRoutes, toAuthHeaders } from "./auth-handler.js";
 
 type AppOptions = {
@@ -25,10 +28,14 @@ type AppOptions = {
   trustedOrigins?: string[];
   logger?: boolean | { level: string };
   markets?: GetMarkets;
+  newsletter?: SubscribeNewsletter;
 };
 
 export function createApp(options: AppOptions): FastifyInstance {
   const markets = options.markets ?? new GetMarkets(new CachedMarketDataProvider(new CoinGeckoMarketDataProvider()));
+  const newsletter = options.newsletter ?? new SubscribeNewsletter({
+    subscribe: async () => { throw new AppError("SERVICE_UNAVAILABLE", "Newsletter subscriptions are temporarily unavailable."); }
+  });
   const app = Fastify({
     logger: options.logger ?? true,
     requestIdHeader: "x-request-id"
@@ -51,7 +58,8 @@ export function createApp(options: AppOptions): FastifyInstance {
       tags: [
         { name: "health", description: "Service liveness and readiness" },
         { name: "identity", description: "Authenticated actor information" },
-        { name: "markets", description: "Public cryptocurrency market data" }
+        { name: "markets", description: "Public cryptocurrency market data" },
+        { name: "newsletter", description: "Public newsletter subscriptions" }
       ]
     }
   });
@@ -83,6 +91,31 @@ export function createApp(options: AppOptions): FastifyInstance {
         return reply.status(422).send(body);
       }
       return marketsResponseSchema.parse(await markets.execute(parsed.data));
+    });
+
+    app.post("/api/v1/newsletter/subscriptions", {
+      schema: {
+        operationId: "subscribeNewsletter",
+        summary: "Subscribe to the LegaBit newsletter",
+        tags: ["newsletter"],
+        body: toOpenApiSchema(newsletterSubscribeInputSchema),
+        response: {
+          200: toOpenApiSchema(newsletterSubscribeResponseSchema),
+          422: toOpenApiSchema(apiErrorSchema),
+          503: toOpenApiSchema(apiErrorSchema)
+        }
+      }
+    }, async (request, reply) => {
+      const parsed = newsletterSubscribeInputSchema.safeParse(request.body);
+      if (!parsed.success) {
+        const body = apiErrorSchema.parse({
+          code: "VALIDATION_ERROR",
+          message: "Invalid newsletter subscription.",
+          requestId: request.id
+        });
+        return reply.status(422).send(body);
+      }
+      return newsletterSubscribeResponseSchema.parse(await newsletter.execute(parsed.data));
     });
 
     app.get("/health/live", {

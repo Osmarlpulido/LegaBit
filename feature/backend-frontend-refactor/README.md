@@ -11,10 +11,10 @@ Last reviewed: 2026-07-12
 | Current-state assessment | Complete | Repository boundaries, risks, and baseline needs are documented |
 | Target architecture | Accepted for incremental implementation | Modular API boundary, MongoDB direction, and contract ownership are defined |
 | API foundation | In progress | `apps/api`, configuration validation, MongoDB connection management, health endpoints, auth handler, current-user endpoint, errors, logging, shutdown, tests, and reproducible OpenAPI generation are implemented |
-| Shared API contracts | In progress | `packages/api` is renamed to `packages/api-contracts`; health, error, and current-user contracts drive route schemas and the committed OpenAPI artifact; product contracts remain |
-| Market-data extraction | In progress | Contracts, `/api/v1/markets`, resilient validated CoinGecko access, process-wide caching/coalescing, bounded provider/cache telemetry, nullable-field handling, tests, and dashboard client cutover are implemented; the legacy route remains for rollback pending production observation |
+| Shared API contracts | In progress | `packages/api` is renamed to `packages/api-contracts`; health, error, identity, market, and newsletter contracts drive route schemas, semantic compatibility checks, and the committed OpenAPI artifact |
+| Market-data extraction | Complete for the current non-production environment | Contracts, `/api/v1/markets`, resilient validated CoinGecko access, caching/coalescing, telemetry, tests, dashboard cutover, and legacy frontend route/adapter removal are implemented |
 | MongoDB provisioning and data migration | Not started | No production database, collections, indexes, validators, or data have been changed |
-| Newsletter extraction | Not started | Existing Next.js route and persistence paths remain active |
+| Newsletter extraction | In progress | Backend contracts, application/repository boundaries, atomic MongoDB upsert/index behavior, route, OpenAPI, and tests are implemented; the existing Next.js/Supabase route remains active pending cutover |
 | Identity and authorization boundary | In progress | Better Auth backend and frontend login/session/sign-out surfaces are implemented; live Google/MongoDB validation, account policy, tenancy, and authorization remain |
 | Frontend isolation | In progress | Same-origin auth/API rewrites, Better Auth client, typed market client/TanStack Query state, and dependency-boundary enforcement are implemented; legacy product routes remain in Next.js |
 | Supabase/Prisma removal | In progress | Supabase auth paths and the frontend Prisma fallback/dependency are removed; admin/PostgREST newsletter paths and the remaining Supabase SDK stay until newsletter cutover |

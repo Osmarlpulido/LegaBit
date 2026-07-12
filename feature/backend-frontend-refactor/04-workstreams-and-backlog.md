@@ -20,12 +20,12 @@ Acceptance: ADRs state context, decision, alternatives, consequences, owner, rev
 
 ## Epic B — contracts and API client
 
-Status: in progress — package rename, foundation contracts, reproducible OpenAPI generation, CI drift checking, compatibility rules, and a tested browser-compatible typed frontend client are delivered; semantic contract comparison remains
+Status: in progress — package rename, foundation and product contracts, reproducible OpenAPI generation, semantic CI compatibility checking, compatibility rules, and a tested browser-compatible typed frontend client are delivered; concrete support windows remain
 
 - B1. Rename `packages/api` to a clearly non-executable contracts package.
-- B2. Define versioned newsletter, market, identity, health, and error schemas.
+- B2. **Done for implemented routes:** Define versioned newsletter, market, identity, health, and error schemas; extend as new domains are implemented.
 - B3. **Done:** Generate/check a committed OpenAPI artifact from canonical Zod schemas.
-- B4. **In progress:** Backend builds and CI reject OpenAPI drift; semantic comparison against the prior supported contract remains.
+- B4. **Done:** Backend builds reject artifact drift and CI semantically compares the candidate OpenAPI contract against the supported Git baseline.
 - B5. **Done:** The tested typed client provides configurable base URL, credentials, request IDs, browser-compatible cancellation/timeouts, runtime response validation, and safe error mapping.
 - B6. **In progress:** Additive versus breaking changes are documented; concrete support windows remain to be approved.
 
@@ -42,7 +42,7 @@ Status: in progress — executable API, validated configuration, request IDs, lo
 - C5. Add liveness, readiness, graceful shutdown, and dependency timeouts.
 - C6. Add CORS/headers/body-size/rate-limit defaults appropriate to topology.
 - C7. Add local development orchestration and isolated integration database.
-- C8. **In progress:** Separately scheduled backend/frontend build, lint, typecheck, test, boundary, and OpenAPI CI jobs are delivered. The frontend has no database dependency and installs with lifecycle scripts disabled; deployment pipelines remain.
+- C8. **In progress:** Separately scheduled backend/frontend build, direct ESLint, typecheck, test, boundary, semantic OpenAPI, and reproducible no-network-font build jobs are delivered. The frontend has no database dependency and installs with lifecycle scripts disabled; deployment pipelines remain.
 
 Acceptance: the empty service is production-deployable, observable, safely terminates, and has no product traffic.
 
@@ -56,7 +56,7 @@ Status: in progress — provider-neutral contracts, validated use case, resilien
 - D4. **Done for the current single-process topology:** Implement process-wide cache, request coalescing, and stale-on-provider-error policy. Reassess external shared caching before horizontal scaling.
 - D5. **Done:** Add bounded provider request/retry/duration and cache outcome metrics plus safe error mapping.
 - D6. **In progress:** The dashboard uses `/api/v1/markets`; production telemetry observation and rollback validation remain.
-- D7. Delete frontend-owned provider/server code after observation.
+- D7. **Done:** Delete the legacy Next.js crypto route and frontend-owned CoinGecko adapter. No production observation window was required because the application is not deployed.
 
 Acceptance: provider changes do not affect the frontend contract; load does not exceed the agreed provider quota.
 
@@ -76,7 +76,7 @@ Resolution (2026-07-12): all implementation and test findings above are closed. 
 
 ## Epic E — newsletter module and data reconciliation
 
-Status: not started
+Status: in progress — newsletter contracts, application service, MongoDB repository, atomic idempotent upsert, unique index, backend route, OpenAPI, and initial tests are delivered; policy, provisioning, abuse controls, frontend cutover, and operational verification remain
 
 - E1. Compare live PostgreSQL/Supabase schema and data to Prisma history in every environment.
 - E2. Design collections using access patterns, bounded-growth rules, references/embedding, consistency boundaries, validators, and indexes.
@@ -84,8 +84,8 @@ Status: not started
 - E4. Create a repeatable export/transform/load plus delta-reconciliation plan.
 - E5. Provision MongoDB replica sets, least-privilege users, backups, alerts, and migration runner.
 - E6. Create versioned, idempotent validator/index/data migrations.
-- E7. Define consent, normalization, duplicate, retention, and deletion rules.
-- E8. Implement application service and MongoDB repository using atomic operations.
+- E7. **In progress:** Form copy establishes explicit communications consent and email normalization/duplicate semantics are implemented; retention and deletion rules remain.
+- E8. **In progress:** Application service, MongoDB repository, atomic normalized-email upsert, unique index, and backend route are implemented; integration-database verification remains.
 - E9. Implement public abuse controls and privacy-safe telemetry.
 - E10. Define concurrency-safe idempotency and transaction retry behavior and test both.
 - E11. Rehearse full load, delta sync, verification, cutover, and rollback on production-like data.

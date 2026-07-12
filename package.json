@@ -11,6 +11,7 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "openapi:check": "yarn workspace @legabit/api-contracts build && yarn workspace @legabit/backend openapi:check",
+    "openapi:compat": "yarn workspace @legabit/backend openapi:compat",
     "openapi:generate": "yarn workspace @legabit/api-contracts build && yarn workspace @legabit/backend openapi:generate",
     "typecheck": "turbo run typecheck",
     "db:generate": "yarn workspace @legabit/db generate",

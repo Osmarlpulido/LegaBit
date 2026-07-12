@@ -27,6 +27,7 @@ yarn workspace @legabit/backend test
 yarn workspace @legabit/backend build
 yarn openapi:generate
 yarn openapi:check
+yarn openapi:compat --base-ref origin/main
 ```
 
 ## API contracts and compatibility
@@ -34,6 +35,8 @@ yarn openapi:check
 Zod schemas in `@legabit/api-contracts` are canonical. HTTP routes attach JSON Schema derived from those contracts so Fastify validates and serializes responses from the same definitions used to generate `openapi/openapi.json`.
 
 Run `yarn openapi:generate` after changing a documented route or contract. The backend build runs `openapi:check` and fails when the committed artifact differs from the generated document.
+
+Run `yarn openapi:compat --base-ref <git-ref>` to compare the committed artifact with a supported baseline. CI uses the pull request base commit (or the previous `main` commit) and rejects removed paths, operations, parameters, response shapes, media types, enum values, and newly required inputs. Additive changes remain valid.
 
 Within `/api/v1`, changes are additive when existing request fields remain valid and existing response fields retain their meaning and type. Removing or renaming fields, making optional inputs required, narrowing accepted values, or changing status/error semantics is breaking and requires a new API version or an explicitly documented compatibility window.
 

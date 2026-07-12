@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -35,6 +37,14 @@ jobs:
 
       - name: Check committed OpenAPI artifact
         run: yarn openapi:check
+
+      - name: Test compatibility checker
+        run: yarn workspace @legabit/backend openapi:compat:test
+
+      - name: Check backward compatibility
+        env:
+          OPENAPI_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: yarn openapi:compat --base-ref "$OPENAPI_BASE_REF"
 
   backend:
     name: Backend

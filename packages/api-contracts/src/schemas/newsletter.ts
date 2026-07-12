@@ -2,11 +2,7 @@ import { z } from "zod";
 
 export const newsletterSubscribeInputSchema = z.object({
   email: z.string().trim().toLowerCase().email("Correo no válido").max(320),
-  displayName: z.union([z.string(), z.null()]).transform((value) => {
-    if (value == null) return undefined;
-    const trimmed = value.trim();
-    return trimmed.length === 0 ? undefined : trimmed.slice(0, 120);
-  }),
+  displayName: z.string().trim().min(1).max(120).optional(),
   phone: z
     .string()
     .trim()
@@ -17,3 +13,11 @@ export const newsletterSubscribeInputSchema = z.object({
 });
 
 export type NewsletterSubscribeInput = z.infer<typeof newsletterSubscribeInputSchema>;
+
+export const newsletterSubscribeResponseSchema = z.object({
+  ok: z.literal(true),
+  alreadySubscribed: z.boolean(),
+  message: z.string()
+});
+
+export type NewsletterSubscribeResponse = z.infer<typeof newsletterSubscribeResponseSchema>;

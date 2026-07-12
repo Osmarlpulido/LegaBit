@@ -105,9 +105,7 @@ export default [
     files: [
       "src/app/api/newsletter/route.ts",
       "src/app/api/health/data/route.ts",
-      "src/app/api/crypto/route.ts",
       "src/lib/auth/current-user.ts",
-      "src/lib/coingecko.ts",
       "src/lib/supabase/admin.ts",
       "src/lib/supabase/env.ts"
     ],

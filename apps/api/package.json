@@ -9,6 +9,8 @@
     "start": "node dist/main.js",
     "lint": "tsc --noEmit",
     "openapi:check": "node --import tsx src/openapi.ts --check",
+    "openapi:compat": "node scripts/check-openapi-compat.mjs",
+    "openapi:compat:test": "node --test scripts/check-openapi-compat.test.mjs",
     "openapi:generate": "node --import tsx src/openapi.ts",
     "typecheck": "tsc --noEmit",
     "test": "tsc -p tsconfig.test.json && node --test dist-test/**/*.test.js"
