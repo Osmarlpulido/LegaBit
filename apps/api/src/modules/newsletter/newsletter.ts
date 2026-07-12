@@ -5,6 +5,7 @@ import {
 
 export type NewsletterSubscription = NewsletterSubscribeInput & {
   subscribedAt: Date;
+  consentCapturedAt: Date;
 };
 
 export interface NewsletterRepository {
@@ -18,13 +19,12 @@ export class SubscribeNewsletter {
   ) {}
 
   async execute(input: NewsletterSubscribeInput): Promise<NewsletterSubscribeResponse> {
-    const result = await this.repository.subscribe({ ...input, subscribedAt: this.now() });
+    const capturedAt = this.now();
+    await this.repository.subscribe({ ...input, subscribedAt: capturedAt, consentCapturedAt: capturedAt });
     return {
       ok: true,
-      alreadySubscribed: result.alreadySubscribed,
-      message: result.alreadySubscribed
-        ? "Este correo ya está suscrito."
-        : "Suscripción registrada correctamente."
+      alreadySubscribed: false,
+      message: "Si el correo es válido, la suscripción quedó registrada."
     };
   }
 }

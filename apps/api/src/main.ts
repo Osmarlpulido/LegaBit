@@ -38,7 +38,6 @@ process.once("SIGINT", () => void shutdown("SIGINT"));
 process.once("SIGTERM", () => void shutdown("SIGTERM"));
 
 try {
-  await newsletterRepository.ensureIndexes();
   await app.listen({ host: config.API_HOST, port: config.API_PORT });
 } catch (error) {
   app.log.fatal({ err: error }, "Failed to start API");

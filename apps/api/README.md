@@ -25,10 +25,13 @@ yarn workspace @legabit/backend dev
 yarn workspace @legabit/backend typecheck
 yarn workspace @legabit/backend test
 yarn workspace @legabit/backend build
+yarn workspace @legabit/backend migrate:newsletter-indexes
 yarn openapi:generate
 yarn openapi:check
 yarn openapi:compat --base-ref origin/main
 ```
+
+Run `migrate:newsletter-indexes` once for each environment before starting or deploying an API version that serves newsletter subscriptions. The command idempotently creates the unique email index and exits; it is deliberately separate from API startup so the runtime MongoDB principal only needs data read/write privileges. Run the migration with a schema-management principal, then run the API with its more restricted runtime principal.
 
 ## API contracts and compatibility
 

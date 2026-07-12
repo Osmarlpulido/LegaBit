@@ -19,14 +19,6 @@ const forbiddenFrontendImports = {
       name: "@legabit/api",
       message: "Import API contracts instead of backend implementation modules."
     },
-    {
-      name: "@/lib/supabase/admin",
-      message: "The privileged Supabase client is restricted to the legacy server-route allowlist."
-    },
-    {
-      name: "@/lib/supabase/env",
-      message: "Server credential helpers are restricted to the legacy server-route allowlist."
-    }
   ],
   patterns: [
     {
@@ -43,8 +35,6 @@ const forbiddenFrontendImports = {
         "../../../api/**",
         "../../../../api/**",
         "../../../../../api/**",
-        "@/lib/supabase/admin/*",
-        "@/lib/supabase/env/*"
       ],
       message: "Frontend code must depend on public contracts, not database or backend infrastructure."
     }
@@ -100,14 +90,10 @@ export default [
     }
   },
   {
-    // These modules are temporary server-only infrastructure for the newsletter and
-    // health routes. Remove this allowlist when those routes move to apps/api.
+    // This server-only auth adapter needs a private internal API URL. Keep the
+    // exception narrow so client and presentation modules remain public-env only.
     files: [
-      "src/app/api/newsletter/route.ts",
-      "src/app/api/health/data/route.ts",
       "src/lib/auth/current-user.ts",
-      "src/lib/supabase/admin.ts",
-      "src/lib/supabase/env.ts"
     ],
     rules: {
       "no-restricted-imports": "off",

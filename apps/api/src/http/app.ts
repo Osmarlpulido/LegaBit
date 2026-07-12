@@ -21,6 +21,7 @@ import { CachedMarketDataProvider } from "../infrastructure/market-cache.js";
 import { GetMarkets } from "../modules/markets/markets.js";
 import { SubscribeNewsletter } from "../modules/newsletter/newsletter.js";
 import { registerAuthRoutes, toAuthHeaders } from "./auth-handler.js";
+import { NewsletterRateLimiter, type NewsletterRateLimitOptions } from "./newsletter-rate-limit.js";
 
 type AppOptions = {
   database: DatabaseHealth;
@@ -29,12 +30,18 @@ type AppOptions = {
   logger?: boolean | { level: string };
   markets?: GetMarkets;
   newsletter?: SubscribeNewsletter;
+  newsletterRateLimit?: NewsletterRateLimitOptions;
 };
 
 export function createApp(options: AppOptions): FastifyInstance {
   const markets = options.markets ?? new GetMarkets(new CachedMarketDataProvider(new CoinGeckoMarketDataProvider()));
   const newsletter = options.newsletter ?? new SubscribeNewsletter({
     subscribe: async () => { throw new AppError("SERVICE_UNAVAILABLE", "Newsletter subscriptions are temporarily unavailable."); }
+  });
+  const newsletterRateLimiter = new NewsletterRateLimiter(options.newsletterRateLimit ?? {
+    maxRequests: 5,
+    windowMs: 60_000,
+    maxKeys: 10_000
   });
   const app = Fastify({
     logger: options.logger ?? true,
@@ -101,11 +108,19 @@ export function createApp(options: AppOptions): FastifyInstance {
         body: toOpenApiSchema(newsletterSubscribeInputSchema),
         response: {
           200: toOpenApiSchema(newsletterSubscribeResponseSchema),
+          429: toOpenApiSchema(apiErrorSchema),
           422: toOpenApiSchema(apiErrorSchema),
           503: toOpenApiSchema(apiErrorSchema)
         }
       }
     }, async (request, reply) => {
+      if (!newsletterRateLimiter.allow(request.ip)) {
+        return reply.status(429).send(apiErrorSchema.parse({
+          code: "RATE_LIMITED",
+          message: "Too many newsletter subscription attempts. Try again later.",
+          requestId: request.id
+        }));
+      }
       const parsed = newsletterSubscribeInputSchema.safeParse(request.body);
       if (!parsed.success) {
         const body = apiErrorSchema.parse({

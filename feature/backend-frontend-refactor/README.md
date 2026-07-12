@@ -14,10 +14,10 @@ Last reviewed: 2026-07-12
 | Shared API contracts | In progress | `packages/api` is renamed to `packages/api-contracts`; health, error, identity, market, and newsletter contracts drive route schemas, semantic compatibility checks, and the committed OpenAPI artifact |
 | Market-data extraction | Complete for the current non-production environment | Contracts, `/api/v1/markets`, resilient validated CoinGecko access, caching/coalescing, telemetry, tests, dashboard cutover, and legacy frontend route/adapter removal are implemented |
 | MongoDB provisioning and data migration | Not started | No production database, collections, indexes, validators, or data have been changed |
-| Newsletter extraction | In progress | Backend contracts, application/repository boundaries, atomic MongoDB upsert/index behavior, route, OpenAPI, and tests are implemented; the existing Next.js/Supabase route remains active pending cutover |
+| Newsletter extraction | In progress | Affirmative consent evidence, privacy-safe idempotency, rate limiting, backend contracts/service/repository, explicit index migration, frontend cutover, OpenAPI, and tests are implemented; provisioning and operational verification remain |
 | Identity and authorization boundary | In progress | Better Auth backend and frontend login/session/sign-out surfaces are implemented; live Google/MongoDB validation, account policy, tenancy, and authorization remain |
 | Frontend isolation | In progress | Same-origin auth/API rewrites, Better Auth client, typed market client/TanStack Query state, and dependency-boundary enforcement are implemented; legacy product routes remain in Next.js |
-| Supabase/Prisma removal | In progress | Supabase auth paths and the frontend Prisma fallback/dependency are removed; admin/PostgREST newsletter paths and the remaining Supabase SDK stay until newsletter cutover |
+| Supabase/Prisma removal | Complete for frontend runtime | Supabase auth/admin/PostgREST paths, SDK/configuration, and the frontend Prisma dependency are removed; historical Prisma migration tooling remains outside the frontend runtime |
 | Production routing and operations | Blocked | Deployment topology and MongoDB hosting decisions remain open |
 
 ## Goal

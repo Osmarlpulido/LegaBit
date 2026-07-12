@@ -10,6 +10,8 @@ type NewsletterDocument = {
   displayName?: string;
   phone: string;
   source: string;
+  consent: NewsletterSubscription["consent"];
+  consentCapturedAt: Date;
   subscribedAt: Date;
 };
 
@@ -18,10 +20,6 @@ export class MongoNewsletterRepository implements NewsletterRepository {
 
   constructor(database: Db) {
     this.collection = database.collection<NewsletterDocument>("newsletterSubscribers");
-  }
-
-  async ensureIndexes(): Promise<void> {
-    await this.collection.createIndex({ email: 1 }, { name: "newsletter_email_unique", unique: true });
   }
 
   async subscribe(subscription: NewsletterSubscription): Promise<{ alreadySubscribed: boolean }> {

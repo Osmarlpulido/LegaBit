@@ -1,6 +1,12 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
+import {
+  NEWSLETTER_CONSENT_POLICY_VERSION,
+  newsletterSubscribeResponseSchema
+} from "@legabit/api-contracts";
+
+import { apiRequest } from "@/lib/api-client";
 
 type NewsletterFormProps = {
   variant?: "card" | "embedded";
@@ -11,6 +17,7 @@ export function NewsletterForm({ variant = "card", source = "landing" }: Newslet
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [consentAccepted, setConsentAccepted] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [feedback, setFeedback] = useState<string | null>(null);
 
@@ -20,37 +27,28 @@ export function NewsletterForm({ variant = "card", source = "landing" }: Newslet
     setFeedback(null);
 
     try {
-      const res = await fetch("/api/newsletter", {
+      const data = await apiRequest("/api/v1/newsletter/subscriptions", {
         method: "POST",
         headers: { "content-type": "application/json" },
+        schema: newsletterSubscribeResponseSchema,
         body: JSON.stringify({
           email,
           phone,
           displayName: displayName.trim() || undefined,
-          source
+          source,
+          consent: {
+            accepted: consentAccepted,
+            policyVersion: NEWSLETTER_CONSENT_POLICY_VERSION
+          }
         })
       });
 
-      const data = (await res.json()) as {
-        ok?: boolean;
-        alreadySubscribed?: boolean;
-        message?: string;
-        code?: string;
-      };
-
-      if (!res.ok) {
-        setStatus("error");
-        setFeedback(data.message ?? "No se pudo completar el registro.");
-        return;
-      }
-
       setStatus("success");
       setFeedback(data.message ?? "Listo.");
-      if (data.alreadySubscribed !== true) {
-        setEmail("");
-        setDisplayName("");
-        setPhone("");
-      }
+      setEmail("");
+      setDisplayName("");
+      setPhone("");
+      setConsentAccepted(false);
     } catch {
       setStatus("error");
       setFeedback("Error de red. Intenta de nuevo.");
@@ -114,6 +112,21 @@ export function NewsletterForm({ variant = "card", source = "landing" }: Newslet
           />
         </div>
 
+        <label className="flex items-start gap-3 text-xs leading-relaxed text-muted-foreground">
+          <input
+            name="consent"
+            type="checkbox"
+            required
+            checked={consentAccepted}
+            onChange={(event) => setConsentAccepted(event.target.checked)}
+            className="mt-0.5 size-4 shrink-0 accent-legabit-petrol"
+          />
+          <span>
+            Acepto expresamente recibir comunicaciones de Legabit y el tratamiento de mis datos conforme a la
+            política de privacidad ({NEWSLETTER_CONSENT_POLICY_VERSION}). Puedo retirar mi consentimiento cuando quiera.
+          </span>
+        </label>
+
         <button
           type="submit"
           disabled={status === "loading"}
@@ -121,10 +134,6 @@ export function NewsletterForm({ variant = "card", source = "landing" }: Newslet
         >
           {status === "loading" ? "Enviando…" : "Quiero recibir el newsletter"}
         </button>
-
-        <p className="text-xs leading-relaxed text-muted-foreground">
-          Al suscribirte aceptas recibir comunicaciones de Legabit. Puedes darte de baja cuando quieras.
-        </p>
 
         {feedback ? (
           <p

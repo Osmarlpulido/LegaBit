@@ -407,11 +407,34 @@
                     "type": "string",
                     "maxLength": 64,
                     "default": "landing"
+                  },
+                  "consent": {
+                    "type": "object",
+                    "properties": {
+                      "accepted": {
+                        "type": "boolean",
+                        "enum": [
+                          true
+                        ]
+                      },
+                      "policyVersion": {
+                        "type": "string",
+                        "enum": [
+                          "privacy-v1"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "accepted",
+                      "policyVersion"
+                    ],
+                    "additionalProperties": false
                   }
                 },
                 "required": [
                   "email",
-                  "phone"
+                  "phone",
+                  "consent"
                 ],
                 "additionalProperties": false
               }
@@ -433,7 +456,10 @@
                       ]
                     },
                     "alreadySubscribed": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "enum": [
+                        false
+                      ]
                     },
                     "message": {
                       "type": "string"
@@ -450,6 +476,46 @@
             }
           },
           "422": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED",
+                        "FORBIDDEN",
+                        "NOT_FOUND",
+                        "VALIDATION_ERROR",
+                        "CONFLICT",
+                        "RATE_LIMITED",
+                        "SERVICE_UNAVAILABLE",
+                        "INTERNAL"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
             "description": "Default Response",
             "content": {
               "application/json": {

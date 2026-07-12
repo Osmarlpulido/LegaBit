@@ -43,23 +43,13 @@ yarn --version
 
 Create `apps/web/.env.local` for local frontend and legacy server-route configuration. Use [.env.example](./.env.example) as the reference.
 
-The legacy newsletter and diagnostic routes still require temporary Supabase data variables during the transition:
-
-```dotenv
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
-SUPABASE_SECRET_KEY=
-```
-
-`SUPABASE_SERVICE_ROLE_KEY` may temporarily replace `SUPABASE_SECRET_KEY` for the existing newsletter route. These values no longer power login. Never expose either server credential with a `NEXT_PUBLIC_` prefix.
-
 The current frontend may also use:
 
 - `COINGECKO_API_KEY` for higher CoinGecko limits.
 - `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` for WalletConnect.
 - The optional marketing URL variables listed in `.env.example`.
 
-Privileged Supabase data access remains a transitional frontend dependency. Better Auth is self-hosted in `apps/api` with MongoDB-backed sessions. Supabase packages and configuration will be removed after the newsletter and diagnostic routes cut over.
+Better Auth and newsletter persistence are backend-owned in `apps/api`; `apps/web` has no Supabase or database runtime dependency.
 
 ## Install dependencies
 
@@ -162,7 +152,7 @@ yarn workspace web dev
 
 Open `http://localhost:3000`.
 
-The frontend currently calls its own `/api/newsletter` and `/api/crypto` handlers. Running the new backend alongside it validates the separated runtime, but stopping the backend does not yet disable those existing frontend features.
+The frontend calls the versioned backend routes through same-origin `/api/v1/*` rewrites, so the backend must be running for dashboard and newsletter features.
 
 ## Start both applications
 

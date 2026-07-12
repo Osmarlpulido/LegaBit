@@ -76,28 +76,34 @@ Resolution (2026-07-12): all implementation and test findings above are closed. 
 
 ## Epic E — newsletter module and data reconciliation
 
-Status: in progress — newsletter contracts, application service, MongoDB repository, atomic idempotent upsert, unique index, backend route, OpenAPI, and initial tests are delivered; policy, provisioning, abuse controls, frontend cutover, and operational verification remain
+Status: in progress — newsletter contracts, affirmative consent evidence, privacy-safe idempotency, bounded abuse controls, application service, MongoDB repository, explicit index migration, backend route, frontend cutover, OpenAPI, and tests are delivered; retention/deletion policy, provisioning, shared-scale controls, and operational verification remain
 
 - E1. Compare live PostgreSQL/Supabase schema and data to Prisma history in every environment.
 - E2. Design collections using access patterns, bounded-growth rules, references/embedding, consistency boundaries, validators, and indexes.
 - E3. Decide ID representation and create deterministic source-to-target ID mapping.
 - E4. Create a repeatable export/transform/load plus delta-reconciliation plan.
 - E5. Provision MongoDB replica sets, least-privilege users, backups, alerts, and migration runner.
-- E6. Create versioned, idempotent validator/index/data migrations.
-- E7. **In progress:** Form copy establishes explicit communications consent and email normalization/duplicate semantics are implemented; retention and deletion rules remain.
+- E6. **In progress:** An explicit idempotent newsletter unique-index migration is implemented separately from API startup; validators, version tracking, and broader data migrations remain.
+- E7. **In progress:** Required affirmative consent, fixed policy version, server capture time, email normalization, and non-enumerating duplicate semantics are implemented; retention, deletion, and withdrawal workflows remain.
 - E8. **In progress:** Application service, MongoDB repository, atomic normalized-email upsert, unique index, and backend route are implemented; integration-database verification remains.
-- E9. Implement public abuse controls and privacy-safe telemetry.
+- E9. **In progress:** A bounded per-IP single-process limiter and privacy-safe public response are implemented; shared-scale enforcement and privacy-safe telemetry remain.
 - E10. Define concurrency-safe idempotency and transaction retry behavior and test both.
 - E11. Rehearse full load, delta sync, verification, cutover, and rollback on production-like data.
-- E12. Cut over form traffic and verify data outcomes.
+- E12. **In progress:** The form now calls `/api/v1/newsletter/subscriptions`; live MongoDB outcome verification remains.
 - E13. Decouple newsletter enrollment from OAuth callback.
-- E14. Remove manual/alternate write paths and Prisma only after the rollback window.
+- E14. **In progress:** Legacy Next.js/Supabase and Prisma runtime write paths are removed; historical Prisma migration tooling remains until the MongoDB design is finalized.
 
 Acceptance: MongoDB is the sole verified write path; no records or required relationships are lost; validators and indexes are installed; duplicate/concurrent requests are safe; backup/restore and cutover recovery are rehearsed; consent semantics are approved.
 
+### Independent newsletter/OpenAPI review follow-up (2026-07-12)
+
+The review of commit `6cd7d3f` identified subscriber enumeration and missing abuse controls, incorrect response-direction compatibility rules, incomplete schema-constraint comparison, index mutation during API startup, and overstated consent completion.
+
+Resolution (2026-07-12): all implementation findings are closed. Newsletter responses are indistinguishable for new and existing addresses, endpoint writes are rate limited, affirmative versioned consent evidence is persisted, and the obsolete Supabase write path is removed. OpenAPI comparison now tests directional enums/requiredness, bounds, formats, unions, compositions, and additional properties. Index creation moved to the explicit `migrate:newsletter-indexes` command using migration credentials. Retention/deletion and shared-scale abuse controls remain ordinary backlog work rather than completed claims.
+
 ## Epic F — identity, tenancy, and authorization
 
-Status: in progress — backend and frontend Better Auth session surfaces are implemented; live provider validation, account policy, domain authorization, and remaining Supabase data removal remain
+Status: in progress — backend and frontend Better Auth session surfaces are implemented and Supabase runtime code is removed; live provider validation, account policy, and domain authorization remain
 
 - F1. **Done:** Integrate Better Auth with the shared MongoDB client and official MongoDB adapter.
 - F2. **Done:** Mount and test same-origin `/api/auth/*` Fastify handling.
@@ -109,17 +115,17 @@ Status: in progress — backend and frontend Better Auth session surfaces are im
 - F8. Enforce permissions in application services, default deny.
 - F9. Add transactional audit logging for sensitive actions.
 - F10. Add forged/revoked session, CSRF/origin, cross-tenant, role downgrade, revoked-membership, and super-admin tests.
-- F11. **In progress:** Supabase SSR/auth SDK paths and configuration are removed; the admin/PostgREST SDK and data configuration remain until newsletter cutover verification.
+- F11. **Done:** Supabase auth, admin/PostgREST SDK paths, runtime dependency, and frontend configuration are removed.
 
 Acceptance: no caller can select an arbitrary tenant/user identity; backend authorization tests cover every protected use case.
 
 ## Epic G — frontend isolation
 
-Status: in progress — same-origin auth/API rewrites, Better Auth frontend client, initial dependency-boundary enforcement, and TanStack Query market state are delivered; boundary hardening, newsletter, and remaining product API migrations remain
+Status: in progress — same-origin auth/API rewrites, Better Auth frontend client, dependency-boundary enforcement, TanStack Query market state, and newsletter client cutover are delivered; remaining product API cleanup and journey tests remain
 
 - G1. **Done with narrow legacy-route exceptions:** Durable checks reject package and relative backend/database imports plus indirect server-environment access. Remove the explicit server-only allowlist at route cutover.
-- G2. **In progress:** Market state uses the typed client and TanStack Query with tested bounded transient retries; migrate newsletter and any remaining server state before completion.
-- G3. **In progress:** The frontend Prisma/database dependency and fallback are removed; privileged Supabase data access remains until newsletter cutover.
+- G2. **In progress:** Market and newsletter state use the typed API boundary; migrate any remaining remote state before completion.
+- G3. **Done:** Frontend database, Prisma, privileged Supabase, SDK, and server-secret dependencies are removed.
 - G4. Reduce auth callback to session-establishment responsibilities.
 - G5. Organize UI by feature and promote only reusable components to `packages/ui`.
 - G6. Add component and critical-journey end-to-end tests.
