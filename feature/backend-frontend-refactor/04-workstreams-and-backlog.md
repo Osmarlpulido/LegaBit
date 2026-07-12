@@ -83,13 +83,13 @@ Acceptance: MongoDB is the sole verified write path; no records or required rela
 
 ## Epic F — identity, tenancy, and authorization
 
-Status: not started — self-hosted Better Auth decision accepted; depends on MongoDB foundation and routing
+Status: in progress — backend Better Auth/MongoDB adapter, Fastify handler, configuration, and current-session endpoint are implemented; frontend cutover, account policy, domain authorization, and Supabase removal remain
 
-- F1. Integrate Better Auth with the shared MongoDB client and official MongoDB adapter.
-- F2. Mount and test same-origin `/api/auth/*` Fastify handling.
-- F3. Configure Better Auth secret rotation, exact trusted origins, secure cookies, Google OAuth, and rate limiting.
-- F4. Define application profiles keyed by Better Auth user ID and idempotent provisioning.
-- F5. Implement current actor and active-tenant resolution behind application-owned interfaces.
+- F1. **Done:** Integrate Better Auth with the shared MongoDB client and official MongoDB adapter.
+- F2. **Done:** Mount and test same-origin `/api/auth/*` Fastify handling.
+- F3. **In progress:** Configure Better Auth secret handling, exact trusted origins, secure cookies, Google OAuth, and rate limiting. Rotation procedure and production credentials remain.
+- F4. **Not started:** Define application profiles keyed by Better Auth user ID and idempotent provisioning.
+- F5. **In progress:** Implement current actor and active-tenant resolution behind application-owned interfaces. Current actor is delivered; tenant resolution remains.
 - F6. Define Supabase account migration or forced re-authentication and reconciliation.
 - F7. Replace frontend Supabase clients, middleware, callback, and sign-out behavior.
 - F8. Enforce permissions in application services, default deny.

@@ -8,10 +8,10 @@ Last reviewed: 2026-07-12
 | Phase | Status | Current result |
 |---|---|---|
 | Phase 0 — decisions and baseline | In progress | Architecture inventory, self-hosted identity direction, and roadmap are complete; topology, MongoDB hosting/modeling, consent, and live-data baseline decisions remain open |
-| Phase 1 — backend foundation | In progress | API workspace, contracts rename, config validation, MongoDB connection lifecycle, health checks, structured errors, logging, shutdown, and initial tests are implemented in PR #1; deployment, routing, OpenAPI, and full CI remain |
+| Phase 1 — backend foundation | In progress | API workspace, contracts rename, config validation, MongoDB connection lifecycle, health/auth/current-user routes, structured errors, CORS, logging, shutdown, and initial tests are implemented in PR #1; deployment, routing, OpenAPI, and full CI remain |
 | Phase 2 — market data | Not started | Existing Next.js route remains active |
 | Phase 3 — MongoDB/newsletter migration | Not started | No datastore or route cutover has occurred |
-| Phase 4 — identity and authorization | Not started | Better Auth decision is accepted; implementation depends on MongoDB foundation and same-origin routing |
+| Phase 4 — identity and authorization | In progress | Backend Better Auth/MongoDB foundation and session boundary are implemented; Google credentials, real-database integration tests, same-origin routing, frontend migration, account policy, authorization, and Supabase removal remain |
 | Phase 5 — frontend cleanup | Not started | Depends on route cutovers |
 | Phase 6 — operational hardening | Not started | Foundational health/logging work has begun, but production hardening has not |
 
@@ -117,7 +117,7 @@ Phase status: not started
 
 ## Phase 4 — identity and authorization boundary (`L`)
 
-Phase status: not started; D-01 is resolved
+Phase status: in progress; D-01 is resolved
 
 ### Work
 

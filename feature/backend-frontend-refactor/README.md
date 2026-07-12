@@ -10,12 +10,12 @@ Last reviewed: 2026-07-12
 |---|---|---|
 | Current-state assessment | Complete | Repository boundaries, risks, and baseline needs are documented |
 | Target architecture | Accepted for incremental implementation | Modular API boundary, MongoDB direction, and contract ownership are defined |
-| API foundation | In progress | `apps/api`, configuration validation, MongoDB connection management, health endpoints, errors, logging, shutdown, and tests are in PR #1 |
-| Shared API contracts | In progress | `packages/api` is renamed to `packages/api-contracts`; health contracts are added |
+| API foundation | In progress | `apps/api`, configuration validation, MongoDB connection management, health endpoints, auth handler, current-user endpoint, errors, logging, shutdown, and tests are in PR #1 |
+| Shared API contracts | In progress | `packages/api` is renamed to `packages/api-contracts`; health, error, and current-user contracts are added |
 | Market-data extraction | Not started | Existing Next.js crypto route remains active |
 | MongoDB provisioning and data migration | Not started | No production database, collections, indexes, validators, or data have been changed |
 | Newsletter extraction | Not started | Existing Next.js route and persistence paths remain active |
-| Identity and authorization boundary | Decision accepted; implementation not started | Self-hosted Better Auth in `apps/api`, backed by MongoDB, will replace Supabase Auth |
+| Identity and authorization boundary | In progress | Self-hosted Better Auth MongoDB adapter, Fastify handler, trusted origins, secure-cookie configuration, and current-session boundary are implemented; frontend cutover and Supabase removal remain |
 | Frontend isolation | Not started | Next.js still owns existing server routes during migration |
 | Supabase removal | Planned | Auth, session middleware, admin/PostgREST writes, environment variables, and SDK dependencies remain until replacement cutovers pass |
 | Production routing and operations | Blocked | Deployment topology and MongoDB hosting decisions remain open |

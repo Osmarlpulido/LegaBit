@@ -3,7 +3,7 @@
 Status: in progress
 Last reviewed: 2026-07-12
 
-Implemented foundation: backend configuration unit tests; liveness/readiness HTTP tests; TypeScript build/typecheck; structured Fastify logging; request IDs; safe generic errors; MongoDB connection timeout; and graceful shutdown. All other requirements in this document remain planned unless explicitly identified as implemented.
+Implemented foundation: backend configuration unit tests; liveness/readiness and authentication-boundary HTTP tests; TypeScript build/typecheck; structured Fastify logging; request IDs; safe generic errors; exact auth origin configuration; credentialed CORS; production secure-cookie configuration; MongoDB connection timeout; and graceful shutdown. All other requirements in this document remain planned unless explicitly identified as implemented.
 
 ## Test strategy
 

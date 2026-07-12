@@ -8,6 +8,10 @@ The runtime reads configuration from process environment variables. Required val
 
 - `MONGODB_URI`: MongoDB replica-set connection string.
 - `MONGODB_DATABASE`: database name; defaults to `legabit`.
+- `BETTER_AUTH_SECRET`: required signing secret of at least 32 characters.
+- `BETTER_AUTH_URL`: public backend/auth origin; defaults to `http://localhost:4000`.
+- `AUTH_TRUSTED_ORIGINS`: comma-separated exact frontend origins; defaults to `http://localhost:3000`.
+- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`: optional during foundation development, but both are required to enable Google login.
 
 Optional server values are `API_HOST` (default `0.0.0.0`), `API_PORT` (default `4000`), `LOG_LEVEL`, and `NODE_ENV`.
 
@@ -27,6 +31,8 @@ yarn workspace @legabit/backend build
 
 - `GET /health/live` reports whether the API process is running and does not query dependencies.
 - `GET /health/ready` pings MongoDB and returns `503` when the API should not receive traffic.
+- `GET|POST /api/auth/*` is the self-hosted Better Auth handler.
+- `GET /api/v1/me` returns the current application-facing user or HTTP `401`.
 
 ## Current boundary
 

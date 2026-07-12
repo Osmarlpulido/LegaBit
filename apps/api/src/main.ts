@@ -1,10 +1,17 @@
 import { loadConfig } from "./bootstrap/config.js";
 import { createApp } from "./http/app.js";
 import { MongoDatabase } from "./infrastructure/mongodb.js";
+import { createAuthService } from "./modules/identity/auth.js";
 
 const config = loadConfig();
 const database = new MongoDatabase(config.MONGODB_URI, config.MONGODB_DATABASE);
-const app = createApp({ database, logger: { level: config.LOG_LEVEL } });
+const auth = createAuthService(config, database);
+const app = createApp({
+  auth,
+  database,
+  logger: { level: config.LOG_LEVEL },
+  trustedOrigins: config.AUTH_TRUSTED_ORIGINS
+});
 
 let shuttingDown = false;
 

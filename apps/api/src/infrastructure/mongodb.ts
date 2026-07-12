@@ -18,6 +18,15 @@ export class MongoDatabase implements DatabaseHealth {
     this.#databaseName = databaseName;
   }
 
+  get client(): MongoClient {
+    return this.#client;
+  }
+
+  get database(): Db {
+    this.#database ??= this.#client.db(this.#databaseName);
+    return this.#database;
+  }
+
   async connect(): Promise<Db> {
     if (!this.#database) {
       await this.#client.connect();

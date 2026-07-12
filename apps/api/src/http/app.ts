@@ -1,14 +1,20 @@
 import {
   apiErrorSchema,
+  currentUserResponseSchema,
   healthLiveResponseSchema,
   healthReadyResponseSchema
 } from "@legabit/api-contracts";
+import cors from "@fastify/cors";
 import Fastify, { type FastifyInstance } from "fastify";
 
 import type { DatabaseHealth } from "../infrastructure/mongodb.js";
+import type { AuthService } from "../modules/identity/auth.js";
+import { registerAuthRoutes, toAuthHeaders } from "./auth-handler.js";
 
 type AppOptions = {
   database: DatabaseHealth;
+  auth: AuthService;
+  trustedOrigins?: string[];
   logger?: boolean | { level: string };
 };
 
@@ -17,6 +23,15 @@ export function createApp(options: AppOptions): FastifyInstance {
     logger: options.logger ?? true,
     requestIdHeader: "x-request-id"
   });
+
+  void app.register(cors, {
+    origin: options.trustedOrigins ?? ["http://localhost:3000"],
+    credentials: true,
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["content-type", "authorization", "x-request-id"]
+  });
+
+  registerAuthRoutes(app, options.auth);
 
   app.get("/health/live", async () => {
     return healthLiveResponseSchema.parse({ status: "ok" });
@@ -35,6 +50,28 @@ export function createApp(options: AppOptions): FastifyInstance {
       });
       return reply.status(503).send(body);
     }
+  });
+
+  app.get("/api/v1/me", async (request, reply) => {
+    const session = await options.auth.getSession(toAuthHeaders(request));
+    if (!session) {
+      const body = apiErrorSchema.parse({
+        code: "UNAUTHORIZED",
+        message: "Authentication is required.",
+        requestId: request.id
+      });
+      return reply.status(401).send(body);
+    }
+
+    return currentUserResponseSchema.parse({
+      user: {
+        id: session.user.id,
+        email: session.user.email,
+        name: session.user.name,
+        image: session.user.image ?? null
+      },
+      session: { expiresAt: session.session.expiresAt.toISOString() }
+    });
   });
 
   app.setNotFoundHandler((request, reply) => {

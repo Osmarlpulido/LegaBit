@@ -34,6 +34,10 @@ yarn --version
   - `API_PORT` — optional; defaults to `4000`.
   - `LOG_LEVEL` — optional; defaults to `info`.
   - `NODE_ENV` — optional; defaults to `development`.
+  - `BETTER_AUTH_SECRET` — required; at least 32 characters and stored as a secret.
+  - `BETTER_AUTH_URL` — public backend/auth origin; defaults to `http://localhost:4000`.
+  - `AUTH_TRUSTED_ORIGINS` — comma-separated exact frontend origins; defaults to `http://localhost:3000`.
+  - `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` — configure both to enable the replacement Google login.
 
 ### Frontend requirements
 
@@ -121,6 +125,7 @@ The backend reads configuration from the process environment. From the repositor
 MONGODB_URI='mongodb://localhost:27017/?replicaSet=rs0' \
 MONGODB_DATABASE='legabit' \
 API_PORT=4000 \
+BETTER_AUTH_SECRET='replace-with-at-least-32-random-characters' \
 yarn workspace @legabit/backend dev
 ```
 
@@ -173,6 +178,7 @@ Terminal 1 — backend:
 ```bash
 MONGODB_URI='mongodb://localhost:27017/?replicaSet=rs0' \
 MONGODB_DATABASE='legabit' \
+BETTER_AUTH_SECRET='replace-with-at-least-32-random-characters' \
 yarn workspace @legabit/backend dev
 ```
 
