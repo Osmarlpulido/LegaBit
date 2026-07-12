@@ -7,11 +7,11 @@ Last reviewed: 2026-07-12
 
 | Phase | Status | Current result |
 |---|---|---|
-| Phase 0 — decisions and baseline | In progress | Architecture inventory and roadmap are complete; identity, topology, MongoDB hosting/modeling, consent, and live-data baseline decisions remain open |
+| Phase 0 — decisions and baseline | In progress | Architecture inventory, self-hosted identity direction, and roadmap are complete; topology, MongoDB hosting/modeling, consent, and live-data baseline decisions remain open |
 | Phase 1 — backend foundation | In progress | API workspace, contracts rename, config validation, MongoDB connection lifecycle, health checks, structured errors, logging, shutdown, and initial tests are implemented in PR #1; deployment, routing, OpenAPI, and full CI remain |
 | Phase 2 — market data | Not started | Existing Next.js route remains active |
 | Phase 3 — MongoDB/newsletter migration | Not started | No datastore or route cutover has occurred |
-| Phase 4 — identity and authorization | Blocked | Waiting for canonical identity-provider decision |
+| Phase 4 — identity and authorization | Not started | Better Auth decision is accepted; implementation depends on MongoDB foundation and same-origin routing |
 | Phase 5 — frontend cleanup | Not started | Depends on route cutovers |
 | Phase 6 — operational hardening | Not started | Foundational health/logging work has begun, but production hardening has not |
 
@@ -117,24 +117,28 @@ Phase status: not started
 
 ## Phase 4 — identity and authorization boundary (`L`)
 
-Phase status: blocked by D-01
+Phase status: not started; D-01 is resolved
 
 ### Work
 
-- Implement backend JWT verification and current-actor request context.
-- Model provider-neutral external identities in MongoDB, or adopt Clerk if that ADR selects it.
-- Add internal user synchronization with idempotent provisioning.
+- Integrate Better Auth with the existing MongoDB client and mount `/api/auth/*` before general JSON request handling.
+- Configure signed session cookies, exact trusted origins, base URL, Google OAuth, rate limiting, and secret rotation.
+- Model application-owned profiles keyed by the Better Auth user ID and provision them idempotently.
+- Implement server-side session resolution and current-actor request context behind an application-owned interface.
 - Implement organization membership resolution and permission checks in application services.
 - Add audit logging for sensitive mutations.
 - Provide `/api/v1/me` and protected-route contract tests.
 - Keep frontend guards for UX, while testing that backend denial is authoritative.
+- Replace Supabase browser/server clients, middleware, callback, and sign-out flow with the Better Auth client and backend endpoints.
+- Migrate or require re-authentication for existing Supabase users according to the approved account-migration policy.
+- Remove Supabase SDK packages and all Supabase environment variables only after the observation and rollback window.
 
 ### Exit criteria
 
-- Invalid, expired, wrong-issuer, and wrong-audience tokens are rejected.
+- Invalid, expired, revoked, forged, and cross-origin sessions are rejected.
 - Cross-tenant and privilege-escalation tests pass.
-- External subject mapping is unique, provider-neutral, and migration-safe.
-- Auth callback contains only responsibilities needed to complete session establishment.
+- Better Auth user IDs map uniquely to application profiles and memberships.
+- Google callback and session establishment are backend-owned and no Supabase runtime dependency remains.
 
 ## Phase 5 — frontend boundary cleanup (`M`)
 

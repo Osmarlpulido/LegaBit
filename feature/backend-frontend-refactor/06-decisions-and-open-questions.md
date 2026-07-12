@@ -9,7 +9,7 @@ Resolve `BLOCKING` items before implementing the phase that depends on them. Eac
 
 | ID | Decision | Recommendation | Status | Blocks |
 |---|---|---|---|---|
-| D-01 | Canonical identity provider | Keep Supabase Auth because it is the active runtime; remove Clerk assumptions/config unless a near-term requirement justifies migration | `BLOCKING` | Identity schema, protected API |
+| D-01 | Canonical identity system | Self-host Better Auth inside `apps/api` with its MongoDB adapter; retain Google as an OAuth provider and remove Supabase after staged cutover | Accepted direction; security/deployment details pending | Identity schema, protected API |
 | D-02 | Backend runtime | Node.js/TypeScript with Fastify | Accepted and implemented | Backend scaffold |
 | D-03 | API topology | Separate backend deployment behind same-origin `/api/v1` proxy | `BLOCKING` | Deployment, auth transport |
 | D-04 | Persistence path | MongoDB with the official Node.js driver; retire Prisma/PostgreSQL and direct service-role PostgREST writes after verified migration | Accepted direction; design details `BLOCKING` | Backend data layer, newsletter extraction |
@@ -23,18 +23,20 @@ Resolve `BLOCKING` items before implementing the phase that depends on them. Eac
 | D-12 | MongoDB modeling/IDs | Access-pattern-led references/embedding and deliberate string/UUID versus `ObjectId` policy | `BLOCKING` | Data migration, API contracts |
 | D-13 | Migration cutover | Rehearsed bulk load plus delta synchronization/final write freeze and explicit post-cutover rollback policy | `BLOCKING` | MongoDB source-of-truth switch |
 
-## Why D-01 is blocking
+## D-01 outcome and remaining identity decisions
 
-The active application authenticates with Supabase, while the Prisma schema names Clerk identifiers and `.env.example` describes both providers. Building user synchronization or organization authorization before choosing one source of identity would create a second migration and ambiguous security semantics.
+The active application authenticates with Supabase, while the Prisma schema names Clerk identifiers and `.env.example` describes both providers. The selected destination is Better Auth hosted in `apps/api`, backed by MongoDB. Neither Supabase nor Clerk remains in the target runtime.
 
 Questions to answer:
 
-- Are any deployed users or organizations already represented in Clerk?
-- Is Supabase Auth intended for the future organization model, or only the current marketing login?
-- Which provider features are required: organizations, invitations, MFA, enterprise SSO, audit events?
-- What account-linking and migration experience is acceptable?
+- Will the first release support Google only, or Google plus email/password?
+- Must existing Supabase accounts preserve their application identity, or is forced Google re-authentication acceptable?
+- What session lifetime, idle refresh, concurrent-session, and revocation policies apply?
+- Is MFA/passkey support required in the first auth release or a later hardening phase?
+- Which exact production and preview origins are trusted?
+- What secret rotation overlap and emergency global-session revocation procedure are required?
 
-If Supabase is selected, replace `clerkUserId`/`clerkOrganizationId` with provider-neutral external identity records instead of renaming them to another provider-specific column. If Clerk is selected, plan an explicit session and account migration; do not run both indefinitely without a federation design.
+Application collections must reference the Better Auth user ID through an application-owned profile boundary rather than copying provider-specific Google identifiers. Do not attempt to import Supabase password hashes or sessions. Existing users either link through a verified migration flow or re-authenticate with Google, according to an approved policy.
 
 ## Why D-04 and its MongoDB design details are blocking
 
@@ -112,4 +114,4 @@ What evidence or date should cause reconsideration?
 
 ## Decision-complete gate
 
-Phase 1 may start when D-01 through D-04 are accepted. MongoDB persistence work and route cutover additionally require D-11 through D-13, approved collection/index/consistency designs, product confirmation of newsletter consent behavior, a live source-data inventory, and owner agreement on routing and rollback. Open scale choices such as Redis can remain deferred until measurements justify them.
+Phase 1 is in progress and D-01, D-02, D-05, and D-06 have accepted directions. Auth implementation additionally requires an accepted same-origin routing design, Better Auth security configuration, Google credential/callback ownership, and account-migration policy. MongoDB persistence work and route cutover require D-11 through D-13, approved collection/index/consistency designs, product confirmation of newsletter consent behavior, a live source-data inventory, and owner agreement on routing and rollback. Open scale choices such as Redis can remain deferred until measurements justify them.

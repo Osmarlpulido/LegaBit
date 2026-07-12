@@ -15,8 +15,9 @@ Last reviewed: 2026-07-12
 | Market-data extraction | Not started | Existing Next.js crypto route remains active |
 | MongoDB provisioning and data migration | Not started | No production database, collections, indexes, validators, or data have been changed |
 | Newsletter extraction | Not started | Existing Next.js route and persistence paths remain active |
-| Identity and authorization boundary | Blocked | Canonical identity-provider decision remains open |
+| Identity and authorization boundary | Decision accepted; implementation not started | Self-hosted Better Auth in `apps/api`, backed by MongoDB, will replace Supabase Auth |
 | Frontend isolation | Not started | Next.js still owns existing server routes during migration |
+| Supabase removal | Planned | Auth, session middleware, admin/PostgREST writes, environment variables, and SDK dependencies remain until replacement cutovers pass |
 | Production routing and operations | Blocked | Deployment topology and MongoDB hosting decisions remain open |
 
 ## Goal

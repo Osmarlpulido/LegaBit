@@ -9,7 +9,7 @@ This document turns the migration phases into epics. Each epic should become sma
 
 Status: in progress
 
-- A1. Record identity-provider ADR (`BLOCKING`).
+- A1. Record self-hosted Better Auth with MongoDB identity ADR (accepted direction; implementation details pending).
 - A2. Record backend runtime/framework ADR (`BLOCKING`).
 - A3. Record deployment and same-origin routing ADR (`BLOCKING`).
 - A4. Record MongoDB driver, hosting, consistency, ID, modeling, and schema-version ownership ADR (`BLOCKING`).
@@ -83,16 +83,19 @@ Acceptance: MongoDB is the sole verified write path; no records or required rela
 
 ## Epic F — identity, tenancy, and authorization
 
-Status: blocked by canonical identity-provider decision
+Status: not started — self-hosted Better Auth decision accepted; depends on MongoDB foundation and routing
 
-- F1. Implement JWT verification with issuer/audience/key-rotation tests.
-- F2. Define provider-neutral external identity schema.
-- F3. Backfill and validate existing identity mappings.
-- F4. Implement idempotent internal-user provisioning.
-- F5. Implement current actor and active-tenant resolution.
-- F6. Enforce permissions in application services, default deny.
-- F7. Add transactional audit logging for sensitive actions.
-- F8. Add cross-tenant, role downgrade, revoked-membership, and super-admin tests.
+- F1. Integrate Better Auth with the shared MongoDB client and official MongoDB adapter.
+- F2. Mount and test same-origin `/api/auth/*` Fastify handling.
+- F3. Configure Better Auth secret rotation, exact trusted origins, secure cookies, Google OAuth, and rate limiting.
+- F4. Define application profiles keyed by Better Auth user ID and idempotent provisioning.
+- F5. Implement current actor and active-tenant resolution behind application-owned interfaces.
+- F6. Define Supabase account migration or forced re-authentication and reconciliation.
+- F7. Replace frontend Supabase clients, middleware, callback, and sign-out behavior.
+- F8. Enforce permissions in application services, default deny.
+- F9. Add transactional audit logging for sensitive actions.
+- F10. Add forged/revoked session, CSRF/origin, cross-tenant, role downgrade, revoked-membership, and super-admin tests.
+- F11. Remove Supabase SDKs, configuration, and server/admin data paths after cutover verification.
 
 Acceptance: no caller can select an arbitrary tenant/user identity; backend authorization tests cover every protected use case.
 

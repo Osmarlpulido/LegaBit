@@ -39,7 +39,7 @@ yarn --version
 
 Create `apps/web/.env.local` for local frontend and legacy server-route configuration. Use [.env.example](./.env.example) as the reference.
 
-For Supabase authentication, configure:
+The current frontend still requires Supabase authentication variables during the transition:
 
 ```dotenv
 NEXT_PUBLIC_SUPABASE_URL=
@@ -56,7 +56,7 @@ The current frontend may also use:
 - `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` for WalletConnect.
 - The optional marketing URL variables listed in `.env.example`.
 
-Prisma/PostgreSQL and privileged Supabase data access are transitional frontend dependencies. They will be removed after the MongoDB-backed API endpoints replace the existing Next.js handlers.
+Prisma/PostgreSQL, Supabase Auth, and privileged Supabase data access are transitional frontend dependencies. Better Auth will be self-hosted in `apps/api` with MongoDB-backed sessions. Supabase packages and configuration will be removed only after authentication and data routes cut over successfully.
 
 ## Install dependencies
 

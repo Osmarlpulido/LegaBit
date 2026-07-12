@@ -48,7 +48,7 @@ Add dependency graph rules such as:
 
 - `apps/web` must not import `@legabit/db`, backend infrastructure, or server-only provider modules.
 - Contract packages must not depend on executable apps or infrastructure packages.
-- Application/domain code must not import Fastify, the MongoDB driver, Supabase SDKs, or Next.js.
+- Application/domain code must not import Fastify, the MongoDB driver, Better Auth, Supabase SDKs, or Next.js.
 - Only infrastructure/composition code may read backend secrets.
 
 ## Security model
@@ -56,14 +56,14 @@ Add dependency graph rules such as:
 ### Trust boundaries
 
 - Treat all browser input, headers, cookies, tokens, and organization IDs as untrusted.
-- Verify identity tokens in the backend on every protected request.
+- Resolve and validate Better Auth sessions in the backend on every protected request.
 - Resolve user and tenant context from verified identity plus backend data.
 - Enforce permissions in application services; HTTP middleware may populate context but cannot be the only authorization layer.
 - Default deny when identity, membership, or permission information is missing.
 
 ### Secrets and configuration
 
-- Keep database, service-role, provider, Stripe, OpenAI, and webhook secrets in backend deployment configuration only.
+- Keep database, Better Auth, OAuth provider, temporary Supabase migration, Stripe, OpenAI, and webhook secrets in backend deployment configuration only.
 - Expose only explicitly allowlisted `NEXT_PUBLIC_*` values to the frontend.
 - Validate configuration at startup and log only presence/category, never value or connection URL.
 - Establish rotation owners and test rotation without downtime.
@@ -143,7 +143,7 @@ These are proposals and must not become promises until measured against infrastr
 - Failed/partial MongoDB migration and source-to-target reconciliation recovery.
 - MongoDB connection exhaustion, primary election, replication lag, or outage.
 - CoinGecko throttling/outage and cache degradation.
-- Supabase Auth outage or signing-key rotation.
+- Better Auth secret rotation, session-store degradation, or Google OAuth outage.
 - Compromised secret rotation.
 - Newsletter abuse spike and rate-limit adjustment.
 - Frontend-to-backend routing failure.

@@ -15,7 +15,7 @@ Recommended starting stack:
 - Zod for request, response, and configuration validation.
 - OpenAPI generated from or checked against those schemas.
 - MongoDB as the only application persistence path, accessed through the official MongoDB Node.js driver behind repository interfaces.
-- Supabase Auth as the provisional identity provider because it is the active runtime implementation. This is subject to the blocking identity ADR.
+- Better Auth hosted inside `apps/api`, backed by MongoDB, as the self-hosted identity and session system.
 
 The framework choice is reversible and must be captured in an ADR. The enduring design is the boundary between transport, application logic, domain policy, and infrastructure—not Fastify itself.
 
@@ -26,7 +26,7 @@ Browser
   |-- pages/assets/auth initiation --> apps/web (Next.js)
   |-- /api/v1/* --------------------> apps/api (via same-origin proxy initially)
                                            |-- MongoDB
-                                           |-- Supabase Auth JWT verification
+                                           |-- Better Auth + MongoDB sessions
                                            |-- CoinGecko
                                            |-- future Stripe/OpenAI/workflows/analytics
 ```
@@ -40,7 +40,7 @@ Use a reverse proxy or hosting rewrite so the browser continues to use relative 
 - Routing, rendering, accessibility, metadata, and user interaction.
 - Browser state and server-state query caching.
 - Public configuration explicitly safe for browser exposure.
-- OAuth initiation and a minimal framework callback adapter when required to set frontend session cookies.
+- Authentication UI and a typed Better Auth browser client; OAuth protocol handling remains backend-owned.
 - Presentation-specific transformations and static marketing content.
 - A generated or typed API client; no direct database/provider SDK calls.
 
@@ -58,7 +58,7 @@ Use a reverse proxy or hosting rewrite so the browser continues to use relative 
 
 - `api-contracts`: transport schemas, response types, error vocabulary, and API-client generation inputs.
 - `auth`: permission names and pure authorization types; runtime verification remains backend-only.
-- `db`: MongoDB connection management, collection validators, index definitions, and versioned migration scripts for backend consumption only.
+- `db`: MongoDB connection management, application collection validators, index definitions, and versioned migration scripts for backend consumption only. Better Auth owns its documented auth collections through its MongoDB adapter.
 - `ui`: reusable visual components used by frontend applications only.
 - `config`: build, lint, and test presets without runtime secrets.
 
@@ -80,15 +80,16 @@ modules/
     infrastructure/     # CoinGecko adapter and cache
     http/
   identity/
-    application/        # current actor and user synchronization
-    infrastructure/     # Supabase JWT/JWKS verifier
+    application/        # current actor, user profile, and authorization context
+    infrastructure/     # Better Auth configuration and MongoDB adapter
+    http/               # /api/auth/* handler and current-session adapter
   organizations/        # introduced only when product work activates it
   platform/
     health/             # liveness/readiness
     audit/              # append-only sensitive-operation records
 ```
 
-Dependencies point inward: HTTP and infrastructure adapters depend on application contracts; application logic must not depend on Fastify, the MongoDB driver, Next.js, or Supabase SDK types.
+Dependencies point inward: HTTP and infrastructure adapters depend on application contracts; application logic must not depend on Fastify, the MongoDB driver, Next.js, Better Auth, or Supabase SDK types.
 
 ## API design
 
@@ -116,14 +117,16 @@ Preserve compatibility aliases for `/api/newsletter` and `/api/crypto` at the pr
 
 ## Authentication and authorization
 
-Recommended flow if Supabase is confirmed:
+Use Better Auth as a library inside the backend, not a third-party hosted identity service and not custom password/session cryptography.
 
-1. `apps/web` completes OAuth and holds the Supabase session using secure cookies/provider-supported behavior.
-2. Authenticated API requests present the access token to `apps/api`.
-3. The backend verifies issuer, audience, signature, expiry, and required claims through cached JWKS; it never trusts frontend-provided user or organization IDs.
-4. The identity module maps the external subject to an internal user record.
+1. The browser calls same-origin `/api/auth/*`; the edge proxy forwards those requests to `apps/api`.
+2. Better Auth handles Google OAuth and any enabled credential flows, writing users, accounts, sessions, and verification records to MongoDB.
+3. The backend issues signed, HTTP-only, secure session cookies. Keep cookies host-only unless a reviewed deployment requirement proves cross-subdomain cookies are necessary.
+4. Protected routes resolve the session server-side and build an application-owned current-actor context; domain code never consumes Better Auth session types directly.
 5. Application services resolve active organization membership and enforce explicit permissions.
 6. Sensitive mutations write an audit record in the same transaction where feasible.
+
+Configure an explicit auth base URL, exact trusted origins, secret rotation, secure-cookie behavior, rate limiting, and proxy trust. Keep authentication routes same-origin to avoid third-party-cookie failures. Google remains an OAuth provider, but Supabase no longer brokers it.
 
 Authentication answers who the actor is. Authorization remains a backend domain decision. Frontend route guards are user experience only and never a security boundary.
 
@@ -131,7 +134,7 @@ Authentication answers who the actor is. Authorization remains a backend domain 
 
 - MongoDB becomes the source of truth only after migration verification and cutover; PostgreSQL/Supabase remains authoritative before that gate.
 - Use the official MongoDB Node.js driver initially. Do not introduce an ODM until a measured need justifies its abstraction and behavior.
-- Only the backend receives the MongoDB connection string, database name, or privileged Supabase migration credentials.
+- Only the backend receives the MongoDB connection string, database name, Better Auth secret, OAuth client secrets, or temporary privileged Supabase migration credentials.
 - Repositories hide BSON and driver types from application modules and define session/transaction boundaries.
 - Use a managed replica set in every non-test production-like environment; multi-document transactions and change streams require replica-set capabilities.
 - Apply MongoDB JSON Schema validation to durable collections and Zod validation at application boundaries. Neither replaces the other.
@@ -146,7 +149,8 @@ Use separate collections where records grow independently, are queried directly,
 
 | Collection | Modeling direction | Essential indexes |
 |---|---|---|
-| `users` | Provider-neutral external identities and profile | Unique external provider/subject; normalized email as policy permits |
+| Better Auth user/account/session/verification collections | Authentication identities, linked providers, revocable sessions, and verification state owned by Better Auth | Install and verify the indexes required by the selected Better Auth version |
+| `userProfiles` | Application-owned profile and platform-role data keyed by Better Auth user ID | Unique auth user ID; normalized email only if an application use case requires it |
 | `organizations` | Tenant profile and billing references | Unique slug; unique sparse external organization identity |
 | `memberships` | Separate many-to-many edge, not an unbounded embedded array | Unique `(organizationId, userId)`; user lookup; tenant/role lookup |
 | `organizationInvitations` | Independent expiry/status lifecycle | Unique token hash; tenant/email; TTL index only if automatic deletion matches audit requirements |
