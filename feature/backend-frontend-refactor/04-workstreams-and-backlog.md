@@ -83,7 +83,7 @@ Acceptance: MongoDB is the sole verified write path; no records or required rela
 
 ## Epic F — identity, tenancy, and authorization
 
-Status: in progress — backend Better Auth/MongoDB adapter, Fastify handler, configuration, and current-session endpoint are implemented; frontend cutover, account policy, domain authorization, and Supabase removal remain
+Status: in progress — backend and frontend Better Auth session surfaces are implemented; live provider validation, account policy, domain authorization, and remaining Supabase data removal remain
 
 - F1. **Done:** Integrate Better Auth with the shared MongoDB client and official MongoDB adapter.
 - F2. **Done:** Mount and test same-origin `/api/auth/*` Fastify handling.
@@ -91,17 +91,17 @@ Status: in progress — backend Better Auth/MongoDB adapter, Fastify handler, co
 - F4. **Not started:** Define application profiles keyed by Better Auth user ID and idempotent provisioning.
 - F5. **In progress:** Implement current actor and active-tenant resolution behind application-owned interfaces. Current actor is delivered; tenant resolution remains.
 - F6. Define Supabase account migration or forced re-authentication and reconciliation.
-- F7. Replace frontend Supabase clients, middleware, callback, and sign-out behavior.
+- F7. **Done:** Replace frontend Supabase clients, middleware, callback, and sign-out behavior.
 - F8. Enforce permissions in application services, default deny.
 - F9. Add transactional audit logging for sensitive actions.
 - F10. Add forged/revoked session, CSRF/origin, cross-tenant, role downgrade, revoked-membership, and super-admin tests.
-- F11. Remove Supabase SDKs, configuration, and server/admin data paths after cutover verification.
+- F11. **In progress:** Supabase SSR/auth SDK paths and configuration are removed; the admin/PostgREST SDK and data configuration remain until newsletter cutover verification.
 
 Acceptance: no caller can select an arbitrary tenant/user identity; backend authorization tests cover every protected use case.
 
 ## Epic G — frontend isolation
 
-Status: not started
+Status: in progress — same-origin auth/API rewrites and Better Auth frontend client are delivered; product API migrations remain
 
 - G1. Add forbidden-import rules for `@legabit/db`, backend modules, and server secrets.
 - G2. Migrate all server state to the central API client/query layer.

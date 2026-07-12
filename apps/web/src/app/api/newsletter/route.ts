@@ -1,5 +1,5 @@
 import { newsletterSubscribeInputSchema } from "@legabit/api-contracts";
-import { Prisma, prisma } from "@legabit/db";
+import { prisma } from "@legabit/db";
 
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
@@ -16,6 +16,10 @@ function hasSupabaseServiceCredentials(): boolean {
   const key =
     process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() || process.env.SUPABASE_SECRET_KEY?.trim();
   return Boolean(url && key);
+}
+
+function isUniqueConstraintError(error: unknown): error is { code: "P2002" } {
+  return typeof error === "object" && error !== null && "code" in error && error.code === "P2002";
 }
 
 async function subscribeViaSupabase(
@@ -129,7 +133,7 @@ export async function POST(request: Request) {
       message: "Suscripción registrada correctamente."
     });
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+    if (isUniqueConstraintError(e)) {
       return Response.json({
         ok: true as const,
         alreadySubscribed: true as const,

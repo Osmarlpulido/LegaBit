@@ -829,13 +829,6 @@
     "@supabase/phoenix" "^0.4.2"
     tslib "2.8.1"
 
-"@supabase/ssr@^0.10.3":
-  version "0.10.3"
-  resolved "https://registry.yarnpkg.com/@supabase/ssr/-/ssr-0.10.3.tgz#dcd5a47d4af828045a426e0032a88c69ef909be5"
-  integrity sha512-ux2CJgX89h0Fz2lY7ZNafNG2SkXpyRc5dz77K9eKeBLPdtywQixKwIuetDeIViAJBp/buOUVmgj8PVesOklNpw==
-  dependencies:
-    cookie "^1.0.2"
-
 "@supabase/storage-js@2.108.2":
   version "2.108.2"
   resolved "https://registry.yarnpkg.com/@supabase/storage-js/-/storage-js-2.108.2.tgz#6ef7d5c4bba11dfdc531ace2dccb619bf3040f76"
@@ -1700,7 +1693,7 @@ consola@^3.2.3, consola@^3.4.0:
   resolved "https://registry.yarnpkg.com/consola/-/consola-3.4.2.tgz#5af110145397bb67afdab77013fdc34cae590ea7"
   integrity sha512-5IKcdX0nnYavi6G7TtOhwkYzyjfJlatbjMjuLSfE2kYT5pMDOilZ4OvMhi637CcDICTmz3wARPoyhqyX1Y+XvA==
 
-cookie@^1.0.1, cookie@^1.0.2:
+cookie@^1.0.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/cookie/-/cookie-1.1.1.tgz#3bb9bdfc82369db9c2f69c93c9c3ceb310c88b3c"
   integrity sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ==

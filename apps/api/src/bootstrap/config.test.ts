@@ -13,6 +13,7 @@ describe("API configuration", () => {
     assert.equal(config.API_HOST, "0.0.0.0");
     assert.equal(config.API_PORT, 4000);
     assert.equal(config.MONGODB_DATABASE, "legabit");
+    assert.equal(config.BETTER_AUTH_URL, "http://localhost:3000");
     assert.deepEqual(config.AUTH_TRUSTED_ORIGINS, ["http://localhost:3000"]);
   });
 

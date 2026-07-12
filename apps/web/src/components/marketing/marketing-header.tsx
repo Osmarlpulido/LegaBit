@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { HeaderAuth } from "@/components/auth/header-auth";
 import { LegabitLogo } from "@/components/marketing/legabit-logo";
 
 export function MarketingHeader() {
@@ -31,6 +32,7 @@ export function MarketingHeader() {
           >
             Newsletter
           </Link>
+          <HeaderAuth />
         </nav>
       </div>
     </header>

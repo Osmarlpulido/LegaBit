@@ -35,7 +35,7 @@ yarn --version
   - `LOG_LEVEL` — optional; defaults to `info`.
   - `NODE_ENV` — optional; defaults to `development`.
   - `BETTER_AUTH_SECRET` — required; at least 32 characters and stored as a secret.
-  - `BETTER_AUTH_URL` — public backend/auth origin; defaults to `http://localhost:4000`.
+  - `BETTER_AUTH_URL` — public frontend origin used for same-origin auth routes; defaults to `http://localhost:3000`.
   - `AUTH_TRUSTED_ORIGINS` — comma-separated exact frontend origins; defaults to `http://localhost:3000`.
   - `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` — configure both to enable the replacement Google login.
 
@@ -43,7 +43,7 @@ yarn --version
 
 Create `apps/web/.env.local` for local frontend and legacy server-route configuration. Use [.env.example](./.env.example) as the reference.
 
-The current frontend still requires Supabase authentication variables during the transition:
+The legacy newsletter and diagnostic routes still require temporary Supabase data variables during the transition:
 
 ```dotenv
 NEXT_PUBLIC_SUPABASE_URL=
@@ -51,7 +51,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 SUPABASE_SECRET_KEY=
 ```
 
-`SUPABASE_SERVICE_ROLE_KEY` may temporarily replace `SUPABASE_SECRET_KEY` for the existing newsletter route. Never expose either server credential with a `NEXT_PUBLIC_` prefix.
+`SUPABASE_SERVICE_ROLE_KEY` may temporarily replace `SUPABASE_SECRET_KEY` for the existing newsletter route. These values no longer power login. Never expose either server credential with a `NEXT_PUBLIC_` prefix.
 
 The current frontend may also use:
 

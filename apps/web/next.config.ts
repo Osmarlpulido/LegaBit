@@ -7,6 +7,13 @@ loadEnvConfig(monorepoRoot);
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@legabit/ui", "@legabit/api-contracts"],
+  async rewrites() {
+    const apiUrl = process.env.API_INTERNAL_URL?.trim() ?? "http://localhost:4000";
+    return [
+      { source: "/api/auth/:path*", destination: `${apiUrl}/api/auth/:path*` },
+      { source: "/api/v1/:path*", destination: `${apiUrl}/api/v1/:path*` }
+    ];
+  },
   webpack(config) {
     // @walletconnect/modal-ui arrastra motion/@motionone/dom con archivos rotos.
     // Sustituimos esos paquetes con módulos vacíos para que el build no falle.

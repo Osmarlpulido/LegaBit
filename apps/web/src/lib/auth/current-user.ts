@@ -1,28 +1,28 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { currentUserResponseSchema } from "@legabit/api-contracts";
+import { cookies } from "next/headers";
 
 export type CurrentUser = {
   id: string;
   email: string | null;
 };
 
-// Lee el usuario actual desde las cookies de sesión validando el JWT con getClaims().
-// Devuelve null si no hay sesión válida. Seguro para usar en Server Components.
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   try {
-    const supabase = await createSupabaseServerClient();
-    const { data, error } = await supabase.auth.getClaims();
-    if (error || !data?.claims) {
-      return null;
-    }
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.getAll().map(({ name, value }) => `${name}=${value}`).join("; ");
+    const apiUrl = process.env.API_INTERNAL_URL?.trim() ?? "http://localhost:4000";
+    const response = await fetch(`${apiUrl}/api/v1/me`, {
+      headers: cookieHeader ? { cookie: cookieHeader } : undefined,
+      cache: "no-store"
+    });
+    if (!response.ok) return null;
 
-    const claims = data.claims as { sub?: string; email?: string };
-    if (!claims.sub) {
-      return null;
-    }
+    const parsed = currentUserResponseSchema.safeParse(await response.json());
+    if (!parsed.success) return null;
 
     return {
-      id: claims.sub,
-      email: claims.email ?? null
+      id: parsed.data.user.id,
+      email: parsed.data.user.email
     };
   } catch {
     return null;
