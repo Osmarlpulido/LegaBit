@@ -16,7 +16,7 @@ Last reviewed: 2026-07-12
 | MongoDB provisioning and data migration | Not started | No production database, collections, indexes, validators, or data have been changed |
 | Newsletter extraction | Not started | Existing Next.js route and persistence paths remain active |
 | Identity and authorization boundary | In progress | Better Auth backend and frontend login/session/sign-out surfaces are implemented; live Google/MongoDB validation, account policy, tenancy, and authorization remain |
-| Frontend isolation | In progress | Same-origin auth/API rewrites and Better Auth client are implemented; product API routes remain in Next.js |
+| Frontend isolation | In progress | Same-origin auth/API rewrites, Better Auth client, typed market client/TanStack Query state, and dependency-boundary enforcement are implemented; legacy product routes remain in Next.js |
 | Supabase removal | In progress | Supabase auth clients, middleware, callback, sign-out route, and SSR SDK are removed; admin/PostgREST newsletter paths and the remaining SDK stay until newsletter cutover |
 | Production routing and operations | Blocked | Deployment topology and MongoDB hosting decisions remain open |
 

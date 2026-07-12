@@ -1,14 +1,16 @@
-import type { MarketCurrency, MarketsResponse } from "@legabit/api-contracts";
+import {
+  marketsResponseSchema,
+  type MarketCurrency,
+  type MarketsResponse
+} from "@legabit/api-contracts";
+
+import { apiRequest } from "@/lib/api-client";
 
 export type MarketQuery = {
   currency: MarketCurrency;
   pageSize?: number;
   page?: number;
-};
-
-type ErrorResponse = {
-  message?: string;
-  error?: string;
+  signal?: AbortSignal;
 };
 
 /**
@@ -21,27 +23,17 @@ type ErrorResponse = {
 export async function fetchMarketData({
   currency,
   pageSize = 50,
-  page = 1
+  page = 1,
+  signal
 }: MarketQuery): Promise<MarketsResponse> {
   const params = new URLSearchParams({
     currency,
     pageSize: String(pageSize),
     page: String(page)
   });
-  const response = await fetch(`/api/v1/markets?${params.toString()}`);
-
-  if (!response.ok) {
-    let body: ErrorResponse = {};
-
-    try {
-      body = (await response.json()) as ErrorResponse;
-    } catch {
-      // The status still gives callers a useful error when an upstream proxy
-      // returns an empty or non-JSON response.
-    }
-
-    throw new Error(body.message ?? body.error ?? `HTTP ${response.status}`);
-  }
-
-  return response.json() as Promise<MarketsResponse>;
+  return apiRequest(`/api/v1/markets?${params.toString()}`, {
+    method: "GET",
+    schema: marketsResponseSchema,
+    signal
+  });
 }

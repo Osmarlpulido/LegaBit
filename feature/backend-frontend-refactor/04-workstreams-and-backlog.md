@@ -20,20 +20,20 @@ Acceptance: ADRs state context, decision, alternatives, consequences, owner, rev
 
 ## Epic B — contracts and API client
 
-Status: in progress — package rename, foundation contracts, reproducible OpenAPI generation, drift checking, and compatibility rules are delivered; versioned product contracts, semantic compatibility comparison, and frontend client remain
+Status: in progress — package rename, foundation contracts, reproducible OpenAPI generation, CI drift checking, compatibility rules, and the typed frontend client are delivered; semantic compatibility comparison remains
 
 - B1. Rename `packages/api` to a clearly non-executable contracts package.
 - B2. Define versioned newsletter, market, identity, health, and error schemas.
 - B3. **Done:** Generate/check a committed OpenAPI artifact from canonical Zod schemas.
-- B4. **In progress:** Backend builds reject OpenAPI drift; semantic comparison against the prior supported contract and full CI wiring remain.
-- B5. Add a typed frontend client with base URL, auth, request IDs, timeouts, and error mapping.
+- B4. **In progress:** Backend builds and CI reject OpenAPI drift; semantic comparison against the prior supported contract remains.
+- B5. **Done:** Add a typed frontend client with configurable base URL, credentials, request IDs, cancellation/timeouts, runtime response validation, and safe error mapping.
 - B6. **In progress:** Additive versus breaking changes are documented; concrete support windows remain to be approved.
 
 Acceptance: malformed requests and responses fail tests; a prior supported frontend contract remains compatible.
 
 ## Epic C — backend platform
 
-Status: in progress — executable API, validated configuration, request IDs, logging, centralized safe errors, health checks, graceful shutdown, MongoDB connection boundary, and initial tests delivered; routing, security defaults, integration database, full CI, and deployment remain
+Status: in progress — executable API, validated configuration, request IDs, logging, centralized safe errors, health checks, graceful shutdown, MongoDB connection boundary, initial tests, and independent CI jobs delivered; routing, security defaults, integration database, and deployment remain
 
 - C1. Scaffold executable API and composition root.
 - C2. Validate environment at startup with secret-safe diagnostics.
@@ -42,7 +42,7 @@ Status: in progress — executable API, validated configuration, request IDs, lo
 - C5. Add liveness, readiness, graceful shutdown, and dependency timeouts.
 - C6. Add CORS/headers/body-size/rate-limit defaults appropriate to topology.
 - C7. Add local development orchestration and isolated integration database.
-- C8. Add backend build, lint, typecheck, test, and deploy pipelines.
+- C8. **In progress:** Independent backend/frontend build, lint, typecheck, test, and OpenAPI CI jobs are delivered; deployment pipelines remain.
 
 Acceptance: the empty service is production-deployable, observable, safely terminates, and has no product traffic.
 
@@ -115,10 +115,10 @@ Acceptance: no caller can select an arbitrary tenant/user identity; backend auth
 
 ## Epic G — frontend isolation
 
-Status: in progress — same-origin auth/API rewrites and Better Auth frontend client are delivered; product API migrations remain
+Status: in progress — same-origin auth/API rewrites, Better Auth frontend client, dependency-boundary enforcement, and TanStack Query market state are delivered; newsletter and remaining product API migrations remain
 
-- G1. Add forbidden-import rules for `@legabit/db`, backend modules, and server secrets.
-- G2. Migrate all server state to the central API client/query layer.
+- G1. **Done with narrow legacy-route exceptions:** Add forbidden-import rules for `@legabit/db`, backend modules, privileged clients, and server secrets. Remove the newsletter/health allowlist at their cutover.
+- G2. **In progress:** Market state uses the typed client and TanStack Query; migrate newsletter and any remaining server state before completion.
 - G3. Remove privileged Supabase client and database dependencies.
 - G4. Reduce auth callback to session-establishment responsibilities.
 - G5. Organize UI by feature and promote only reusable components to `packages/ui`.

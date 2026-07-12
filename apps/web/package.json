@@ -22,8 +22,7 @@
     "react-dom": "^19.0.0",
     "recharts": "^3.8.1",
     "viem": "^2.52.2",
-    "wagmi": "^3.6.16",
-    "zustand": "^5.0.14"
+    "wagmi": "^3.6.16"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

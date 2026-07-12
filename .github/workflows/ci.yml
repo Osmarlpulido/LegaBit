@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  TURBO_TELEMETRY_DISABLED: "1"
+
+jobs:
+  openapi-contract:
+    name: OpenAPI contract drift
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Check committed OpenAPI artifact
+        run: yarn openapi:check
+
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build contracts
+        run: yarn workspace @legabit/api-contracts build
+
+      - name: Lint backend
+        run: yarn workspace @legabit/backend lint
+
+      - name: Typecheck backend
+        run: yarn workspace @legabit/backend typecheck
+
+      - name: Test backend
+        run: yarn workspace @legabit/backend test
+
+      - name: Build backend
+        run: yarn workspace @legabit/backend build
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build contracts
+        run: yarn workspace @legabit/api-contracts build
+
+      - name: Lint frontend
+        run: yarn workspace web lint
+
+      - name: Typecheck frontend
+        run: yarn workspace web typecheck
+
+      - name: Build frontend
+        run: yarn workspace web build
